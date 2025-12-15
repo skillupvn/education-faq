@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❓ FAQ SkillUp Center - Tra Cứu Nhanh</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.3em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            box-shadow: none;
+        }
+
+        .btn-clear:hover {
+            background: #e8e8e8;
+        }
+
+        .filters-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .filter-label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .filter-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            background: #f0f0f0;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .results-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .faq-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #667eea;
+        }
+
+        .faq-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-left-color: #764ba2;
+        }
+
+        .faq-card h3 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            word-break: break-word;
+        }
+
+        .faq-tag {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .question-text {
+            color: #555;
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 0.95em;
+        }
+
+        .answer-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .answer-title {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .answer-content {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.95em;
+        }
+
+        .cta-box {
+            background: #f0f5ff;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 0.95em;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 15px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 0.85em;
+            color: #999;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .copy-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-top: 10px;
+            margin-right: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            text-align: center;
+            color: white;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .btn, .btn-clear {
+                width: 100%;
+            }
+
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs-nav {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: rgba(255,255,255,0.1);
+            border-left: 4px solid white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>❓ FAQ SkillUp Center</h1>
+            <p>Tra cứu nhanh - Tìm kiếm dễ - Sao chép một click</p>
+        </header>
+
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab(event, 'faq')">📚 FAQ Câu Hỏi</button>
+            <button class="tab-btn" onclick="switchTab(event, 'templates')">💬 Mẫu Tin Nhắn</button>
+            <button class="tab-btn" onclick="switchTab(event, 'situations')">⚡ Tình Huống Đặc Biệt</button>
+        </div>
+
+        <!-- TAB 1: FAQ -->
+        <div id="faq" class="tab-content active">
+            <div class="search-section">
+                <div class="info-box">
+                    💡 Mẹo: Tìm kiếm theo câu hỏi hoặc từ khóa | Lọc theo nhóm FAQ | Sao chép nội dung một click
+                </div>
+
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="faqSearch" 
+                        class="search-input" 
+                        placeholder="🔍 Tìm câu hỏi, từ khóa...">
+                    <button class="btn" onclick="searchFAQ()">🔍 Tìm</button>
+                    <button class="btn-clear" onclick="clearFAQSearch()">✕ Xóa</button>
+                </div>
+
+                <div class="filters-section">
+                    <span class="filter-label">📂 Lọc nhóm:</span>
+                    <div class="filter-options" id="faqFilterOptions"></div>
+                </div>
+
+                <div class="stats">
+                    📊 Tổng <span id="totalFAQ">0</span> câu hỏi | Hiển thị <span id="displayFAQ">0</span>
+                </div>
+            </div>
+
+            <div class="results-section" id="faqResults"></div>
+        </div>
+
+        <!-- TAB 2: TEMPLATES -->
+        <div id="templates" class="tab-content">
+            <div class="search-section">
+                <div class="info-box">
+                    💡 Mẹo: Xem các mẫu tin nhắn tự động | Tìm kiếm | Sao chép nhanh để dùng
+                </div>
+
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="templateSearch" 
+                        class="search-input" 
+                        placeholder="🔍 Tìm mẫu tin nhắn...">
+                    <button class="btn" onclick="searchTemplate()">🔍 Tìm</button>
+                    <button class="btn-clear" onclick="clearTemplateSearch()">✕ Xóa</button>
+                </div>
+
+                <div class="stats">
+                    📊 Tổng <span id="totalTemplate">0</span> mẫu | Hiển thị <span id="displayTemplate">0</span>
+                </div>
+            </div>
+
+            <div class="results-section" id="templateResults"></div>
+        </div>
+
+        <!-- TAB 3: SITUATIONS -->
+        <div id="situations" class="tab-content">
+            <div class="search-section">
+                <div class="info-box">
+                    💡 Mẹo: Xem cách xử lý các tình huống đặc biệt | Tìm theo từ khóa | Sao chép phản hồi
+                </div>
+
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="situationSearch" 
+                        class="search-input" 
+                        placeholder="🔍 Tìm tình huống...">
+                    <button class="btn" onclick="searchSituation()">🔍 Tìm</button>
+                    <button class="btn-clear" onclick="clearSituationSearch()">✕ Xóa</button>
+                </div>
+
+                <div class="stats">
+                    📊 Tổng <span id="totalSituation">0</span> tình huống | Hiển thị <span id="displaySituation">0</span>
+                </div>
+            </div>
+
+            <div class="results-section" id="situationResults"></div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 Hệ thống FAQ hoàn chỉnh cho SkillUp Center | Cập nhật: 15/12/2025</p>
+            <p style="margin-top: 10px;">✨ Hỗ trợ tư vấn viên & nhân viên hỗ trợ khách hàng chuyên nghiệp</p>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DỮ LIỆU ====================
+
+        // SHEET 1: CauHoi_FAQ
+        const faqData = [
+            {
+                stt: 1,
+                group: 'Giới thiệu',
+                question: 'trung tâm là gì',
+                variations: 'skillup là gì, giới thiệu chung, làm gì ở skillup',
+                title: 'SkillUp Center là trung tâm gì?',
+                answer: 'Dạ thưa anh/chị! 😊\n\nSkillUp Center là Trung tâm Đào tạo & Phát triển Kỹ năng toàn diện cho trẻ từ 3 đến 15 tuổi.\n\nĐiểm đặc biệt của SkillUp là sự kết hợp hài hòa giữa phát triển tư duy logic (qua Cờ vua, Toán Soroban) và nuôi dưỡng sáng tạo, cảm xúc (qua Vẽ Mỹ thuật, Rèn chữ). Mỗi khóa học đều được các chuyên gia giáo dục thiết kế nhằm khơi dậy niềm vui học tập, phát triển tiềm năng riêng và xây dựng sự tự tin vững vàng cho trẻ.\n\nSkillUp tin rằng mỗi đứa trẻ đều là một "nhà vô địch" tiềm năng!',
+                cta: 'Để em có thể chia sẻ chi tiết hơn về lộ trình phù hợp nhất cho bé, anh/chị cho em biết bé nhà mình năm nay bao nhiêu tuổi và có sở thích đặc biệt nào không ạ? 🧒',
+                status: 'Đã duyệt',
+                updatedBy: 'Nguyễn Thị Mai',
+                updatedDate: '01/12/2025'
+            },
+            {
+                stt: 2,
+                group: 'Giới thiệu',
+                question: 'học được gì',
+                variations: 'bé học được gì, lợi ích, ích lợi',
+                title: 'Các con sẽ học được gì ở SkillUp?',
+                answer: 'Dạ, đây là câu hỏi rất nhiều ba mẹ quan tâm ạ! 💖\n\nTại SkillUp, ngoài kiến thức chuyên môn từng môn, con sẽ được phát triển toàn diện 4 nhóm kỹ năng vàng:\n1️⃣ Tư duy logic & chiến lược: Qua Cờ vua, Toán Soroban.\n2️⃣ Sáng tạo & cảm thụ nghệ thuật: Qua lớp Vẽ Mỹ thuật Sáng tạo.\n3️⃣ Nền tảng học thuật vững chắc: Qua Tiền Tiểu học, Rèn chữ đẹp.\n4️⃣ Kỹ năng mềm thiết yếu: Sự tập trung, kiên nhẫn, tinh thần trách nhiệm và làm việc nhóm.\n\nQuan trọng nhất, con sẽ tìm thấy niềm vui trong học tập và học cách tự tin thể hiện bản thân.',
+                cta: 'Anh/chị quan tâm nhất đến việc phát triển khía cạnh nào cho bé ạ? Em có thể gợi ý môn học phù hợp nhất.',
+                status: 'Đã duyệt',
+                updatedBy: 'Trần Văn Nam',
+                updatedDate: '02/12/2025'
+            },
+            {
+                stt: 3,
+                group: 'Môn học',
+                question: 'cờ vua',
+                variations: 'học cờ, cờ vua trẻ em, cờ vua cho bé, chơi cờ',
+                title: 'Lớp Cờ vua có phù hợp với bé mới bắt đầu?',
+                answer: 'Dạ, hoàn toàn phù hợp ạ! ♟️\n\nLớp Cờ vua tại SkillUp được thiết kế từ cơ bản đến nâng cao, đặc biệt chú trọng việc tạo hứng thú cho trẻ mới làm quen.\n\nCon sẽ không chỉ học luật chơi, mà còn được:\n- Rèn tư duy chiến lược, khả năng quan sát và dự đoán.\n- Phát triển sự tập trung cao độ và tính kiên nhẫn.\n- Học cách tôn trọng đối thủ, ứng xử đẹp khi thắng thua.\n\nGiáo trình của chúng tôi rất sinh động, kết hợp trò chơi, câu chuyện giúp bé tiếp thu tự nhiên. Nhiều phụ huynh đã bất ngờ vì con biết lập kế hoạch và suy nghĩ có hệ thống hơn chỉ sau một khóa.',
+                cta: 'Anh/chị có muốn đăng ký cho bé một buổi học thử MIỄN PHÍ để trải nghiệm không ạ? Em có thể xếp lịch ngay trong tuần này.',
+                status: 'Đã duyệt',
+                updatedBy: 'Lê Hoàng Anh',
+                updatedDate: '03/12/2025'
+            },
+            {
+                stt: 4,
+                group: 'Môn học',
+                question: 'vẽ',
+                variations: 'học vẽ, vẽ sáng tạo, mỹ thuật, hội họa',
+                title: 'Lớp Vẽ sáng tạo khác biệt thế nào?',
+                answer: 'Câu hỏi rất hay ạ! 🎨\n\nKhác với lớp vẽ truyền thống, Vẽ Mỹ thuật Sáng tạo tại SkillUp KHÔNG đặt nặng việc vẽ "giống". Thay vào đó, chúng tôi tập trung:\n\n✨ Khơi nguồn cảm hứng: Từ âm nhạc, câu chuyện, thiên nhiên.\n✨ Đa dạng chất liệu: Bé được "nghịch" với màu nước, sáp dầu, đất nặn, tranh cắt dán (collage).\n✨ Phát triển tư duy hình ảnh: Mỗi bức tranh là một câu chuyện con muốn kể.\n\nMục tiêu lớn nhất là nuôi dưỡng sự tự tin trong biểu đạt, tình yêu cái đẹp và một tâm hồn phong phú.',
+                cta: 'Chị có thể cho em xem một vài nét vẽ "tự do" của bé không ạ? Để giáo viên có thể cảm nhận và tư vấn lớp phù hợp nhất.',
+                status: 'Đã duyệt',
+                updatedBy: 'Phạm Thu Hà',
+                updatedDate: '04/12/2025'
+            },
+            {
+                stt: 5,
+                group: 'Môn học',
+                question: 'soroban',
+                variations: 'toán soroban, toán tư duy, tính nhẩm, bàn tính',
+                title: 'Toán Soroban có lợi ích gì đặc biệt?',
+                answer: 'Dạ, đây là môn học phát triển trí tuệ toàn diện mà SkillUp rất tâm huyết! 🧮\n\nToán Soroban (bàn tính Nhật Bản) không chỉ giúp bé tính toán siêu nhanh, mà còn:\n- Tăng cường khả năng tập trung và ghi nhớ (trí nhớ hình ảnh).\n- Phát triển đồng đều cả 2 bán cầu não: Trái (tính toán logic) và Phải (tưởng tượng hình ảnh bàn tính).\n- Rèn tư duy xử lý thông tin nhanh, chính xác.\n- Xây dựng nền tảng vững chắc và niềm yêu thích Toán học.\n\nChương trình được xây dựng bài bản, "học mà chơi", không tạo áp lực.',
+                cta: 'Hiện SkillUp đang mở danh sách đăng ký sớm với ƯU ĐÃI ĐẶC BIỆT. Anh/chị có muốn đăng ký giữ chỗ để nhận thông báo đầu tiên và ưu đãi tốt nhất không ạ?',
+                status: 'Đã duyệt',
+                updatedBy: 'Nguyễn Văn Minh',
+                updatedDate: '05/12/2025'
+            },
+            {
+                stt: 6,
+                group: 'Môn học',
+                question: 'tiền tiểu học',
+                variations: 'chuẩn bị vào lớp 1, lớp 1, hành trang lớp 1',
+                title: 'Lớp Tiền Tiểu học dạy những gì?',
+                answer: 'Dạ, đây là lớp được các ba mẹ có con 5-6 tuổi quan tâm nhiều nhất ạ! 📚\n\nChúng tôi không chỉ dạy chữ, số, mà quan trọng hơn là chuẩn bị tâm thế sẵn sàng cho bé:\n\n✅ Làm quen chữ cái, số đếm, phát triển ngôn ngữ.\n✅ Rèn kỹ năng cầm bút, tư thế ngồi đúng.\n✅ Phát triển khả năng tập trung, nghe và làm theo hướng dẫn.\n✅ Kỹ năng xã hội: Làm quen bạn mới, biết chia sẻ, xếp hàng.\n\nMục tiêu: Giúp bé tự tin, vui vẻ, không bỡ ngỡ và yêu thích đi học.',
+                cta: 'SkillUp có lớp học thử miễn phí để ba mẹ và bé cảm nhận. Chị có muốn đặt lịch cho bé trải nghiệm không ạ?',
+                status: 'Đã duyệt',
+                updatedBy: 'Hoàng Thị Lan',
+                updatedDate: '06/12/2025'
+            },
+            {
+                stt: 7,
+                group: 'Môn học',
+                question: 'rèn chữ',
+                variations: 'luyện chữ, chữ đẹp, viết chữ đẹp, luyện viết',
+                title: 'Lớp Rèn chữ có giúp con viết nhanh hơn?',
+                answer: 'Chắc chắn rồi ạ! ✍️\n\nLớp Rèn chữ đẹp tại SkillUp không chỉ giúp chữ đẹp lên trông thấy, mà còn giúp con viết đúng, viết nhanh và viết có ý thức hơn.\n\nChúng tôi tập trung:\n1. Sửa tư thế ngồi, cách cầm bút đúng ngay từ đầu.\n2. Luyện nét cơ bản, liên kết chữ theo chuẩn Bộ GD&ĐT.\n3. Rèn tính kiên nhẫn, tỉ mỉ và thẩm mỹ về chữ viết.\n\nGiáo viên sẽ theo sát từng bé, vì mỗi con có một điểm cần cải thiện khác nhau.',
+                cta: 'Anh/chị có thể cho em biết bé đang học lớp mấy và gửi em xem 1-2 dòng chữ bé viết được không ạ? Để giáo viên tư vấn lộ trình phù hợp.',
+                status: 'Đã duyệt',
+                updatedBy: 'Trần Văn Nam',
+                updatedDate: '07/12/2025'
+            },
+            {
+                stt: 8,
+                group: 'Học phí',
+                question: 'học phí',
+                variations: 'giá bao nhiêu, chi phí, đóng tiền, bao tiền',
+                title: 'Học phí các môn tại SkillUp?',
+                answer: 'Dạ, SkillUp luôn nỗ lực mang đến giá trị giáo dục tốt nhất với mức đầu tư hợp lý, thưa anh/chị. 💰\n\nHọc phí phụ thuộc vào môn học, độ tuổi và số buổi/tuần. Để có báo giá chính xác nhất cùng các gói ưu đãi hiện tại (đăng ký sớm, combo môn, cho anh chị em), anh/chị vui lòng cho em biết:\n1. Bé quan tâm môn nào?\n2. Bé năm nay bao nhiêu tuổi ạ?\n\nChúng tôi có nhiều lựa chọn linh hoạt để phù hợp với nhu cầu của gia đình.',
+                cta: 'Em sẽ gửi ngay bảng học phí chi tiết và tư vấn lộ trình tối ưu nhất. Anh/chị cho em xin thông tin trên nhé!',
+                status: 'Đã duyệt',
+                updatedBy: 'Nguyễn Thị Mai',
+                updatedDate: '08/12/2025'
+            },
+            {
+                stt: 9,
+                group: 'Học phí',
+                question: 'ưu đãi',
+                variations: 'giảm giá, khuyến mãi, combo, học thử',
+                title: 'Có ưu đãi gì khi đăng ký?',
+                answer: 'Dạ có ạ! 🎁 SkillUp luôn trân trọng sự tin tưởng sớm từ Quý phụ huynh.\n\nHiện tại chúng tôi đang có:\n- Giảm ngay 10-15% học phí cho học viên đăng ký trước khai giảng.\n- Tặng balo, bộ dụng cụ học tập xinh xắn trị giá 300.000đ.\n- Ưu đãi COMBO đặc biệt (tiết kiệm đến 20%) khi đăng ký 2 môn trở lên.\n- Học thử MIỄN PHÍ trải nghiệm thực tế.\n\nƯu đãi có thể thay đổi theo thời điểm.',
+                cta: 'Để nhận thông tin ưu đãi chính xác và tốt nhất cho môn học mình quan tâm, anh/chị có thể cho em biết bé dự định học môn nào ạ?',
+                status: 'Đã duyệt',
+                updatedBy: 'Lê Hoàng Anh',
+                updatedDate: '09/12/2025'
+            },
+            {
+                stt: 10,
+                group: 'Học phí',
+                question: 'lịch học',
+                variations: 'thời gian học, lịch khai giảng, ca học',
+                title: 'Lịch học các môn thế nào?',
+                answer: 'Dạ, lịch học tại SkillUp được sắp xếp rất linh hoạt ạ! 🗓️\n\nChúng tôi có các ca học:\n- Sáng thứ 7, Chủ nhật (8h00 - 11h00)\n- Chiều trong tuần (17h30 - 19h00)\n- Tối thứ 7 (18h00 - 19h30)\n\nMỗi môn có nhiều ca khác nhau để phù hợp với lịch sinh hoạt của bé và gia đình.',
+                cta: 'Để em gửi lịch học chi tiết của từng môn, anh/chị vui lòng cho biết bé quan tâm môn nào và thời gian rảnh của bé (sáng/chiều/tối, ngày nào) để em tư vấn ca học phù hợp ạ.',
+                status: 'Đã duyệt',
+                updatedBy: 'Phạm Thu Hà',
+                updatedDate: '10/12/2025'
+            },
+            {
+                stt: 11,
+                group: 'Giáo viên',
+                question: 'giáo viên',
+                variations: 'thầy cô giáo, giảng viên, giáo viên thế nào',
+                title: 'Giáo viên của SkillUp có kinh nghiệm không?',
+                answer: 'Dạ, chắc chắn ạ! 👩‍🏫👨‍🏫\n\nSkillUp hiểu rằng "Cô giáo là mẹ hiền thứ hai". Đội ngũ giáo viên của chúng tôi được tuyển chọn kỹ lưỡng với 3 tiêu chí vàng:\n1. CHUYÊN MÔN VỮNG: Tốt nghiệp đúng chuyên ngành, có chứng chỉ sư phạm.\n2. KINH NGHIỆM & TÂM LÝ: Ít nhất 3 năm kinh nghiệm, am hiểu tâm lý lứa tuổi.\n3. TÂM HUYẾT & YÊU TRẺ: Có sự kiên nhẫn, khả năng truyền cảm hứng và thực sự yêu thương trẻ.\n\nTất cả giáo viên đều được đào tạo định kỳ về phương pháp sư phạm hiện đại.',
+                cta: 'Cách tốt nhất là gặp trực tiếp ạ! Anh/chị có muốn đặt lịch học thử để bé được gặp cô giáo và trải nghiệm không khí lớp học không?',
+                status: 'Đã duyệt',
+                updatedBy: 'Nguyễn Văn Minh',
+                updatedDate: '11/12/2025'
+            },
+            {
+                stt: 12,
+                group: 'Cơ sở vật chất',
+                question: 'phòng học',
+                variations: 'cơ sở vật chất, an toàn, thiết bị',
+                title: 'Phòng học có an toàn cho trẻ nhỏ không?',
+                answer: 'Dạ, đây là ưu tiên SỐ 1 của SkillUp, thưa anh/chị ạ! ✅\n\nChúng tôi đầu tư bài bản để tạo môi trường học tập AN TOÀN TUYỆT ĐỐI:\n- Phòng học rộng rãi, đầy đủ ánh sáng tự nhiên, điều hòa.\n- Thiết kế an toàn: Góc tường bo tròn, ổ điện cao, sàn chống trượt.\n- Vệ sinh khử khuẩn định kỳ hàng ngày.\n- Camera giám sát công cộng (phụ huynh có thể xem qua app).\n- Bảo vệ trực tại sảnh trong suốt giờ học.\n\nSkillUp luôn cởi mở chào đón phụ huynh đến tham quan thực tế trước khi quyết định.',
+                cta: 'Anh/chị có thể đến tham quan trung tâm bất cứ lúc nào trong giờ làm việc (8h-20h). Em có thể đặt lịch đón tiếp anh/chị nếu cần ạ.',
+                status: 'Đã duyệt',
+                updatedBy: 'Hoàng Thị Lan',
+                updatedDate: '12/12/2025'
+            },
+            {
+                stt: 13,
+                group: 'Đăng ký',
+                question: 'học thử',
+                variations: 'đăng ký học thử, trải nghiệm, thử nghiệm',
+                title: 'Đăng ký học thử thế nào?',
+                answer: 'Rất đơn giản và nhanh chóng ạ! ✨\n\nAnh/chị chỉ cần cung cấp cho em:\n1. Họ tên bé & Số tuổi.\n2. Môn học muốn trải nghiệm.\n3. Số điện thoại phụ huynh.\n\nEm sẽ xếp lịch học thử MIỄN PHÍ 60 phút và gửi ngay thông tin xác nhận chi tiết (thời gian, địa điểm, giáo viên) qua tin nhắn này.',
+                cta: 'Mình muốn đặt lịch cho bé học thử môn nào ạ? Em check lịch và xếp ngay cho bé nhé!',
+                status: 'Đã duyệt',
+                updatedBy: 'Trần Văn Nam',
+                updatedDate: '13/12/2025'
+            },
+            {
+                stt: 14,
+                group: 'Đăng ký',
+                question: 'thủ tục',
+                variations: 'đăng ký chính thức, làm hồ sơ, cần gì',
+                title: 'Cần mang gì khi đăng ký chính thức?',
+                answer: 'Dạ, khi quyết định đăng ký chính thức cho bé, anh/chị có thể liên hệ đăng ký online qua zalo, facebook hoặc trực tiếp tại Trung tâm. Mọi thủ tục còn lại, nhân viên SkillUp sẽ hỗ trợ anh/chị hoàn tất nhanh chóng và thuận tiện nhất.',
+                cta: 'Mình muốn đặt lịch cho bé học, đăng ký môn nào ạ?',
+                status: 'Đã duyệt',
+                updatedBy: 'Nguyễn Thị Mai',
+                updatedDate: '14/12/2025'
+            },
+            {
+                stt: 15,
+                group: 'Đăng ký',
+                question: 'độ tuổi',
+                variations: 'bé 4 tuổi học gì, 8 tuổi học gì',
+                title: 'Con tôi 10 tuổi thì học được môn gì?',
+                answer: 'Dạ, với bé 10 tuổi, đây là độ tuổi tuyệt vời để phát triển tư duy chiến sâu và kỹ năng học tập, thưa anh/chị! 🌟\n\nSkillUp gợi ý các môn phù hợp và bổ ích nhất:\n- Cờ vua nâng cao: Phát triển tư duy chiến lược, tính toán nước đi.\n- Toán Soroban: Rèn trí não, khả năng tính nhẩm siêu tốc.\n- Rèn chữ đẹp & Tốc ký: Giúp viết nhanh, đẹp, hỗ trợ việc học trên lớp.\n\nChúng tôi sẽ có bài kiểm tra đầu vào nhẹ nhàng để xếp lớp phù hợp với trình độ của bé.',
+                cta: 'Để em tư vấn cụ thể hơn, anh/chị cho em biết bé có sở thích hoặc điểm mạnh đặc biệt nào không ạ? (Ví dụ: thích tính toán, thích vẽ, hay thích suy nghĩ logic).',
+                status: 'Đã duyệt',
+                updatedBy: 'Lê Hoàng Anh',
+                updatedDate: '15/12/2025'
+            },
+            {
+                stt: 16,
+                group: 'Môn học mở rộng',
+                question: 'múa',
+                variations: 'học múa, ballet, nhảy múa',
+                title: 'SkillUp có lớp múa không?',
+                answer: 'Dạ, thưa anh/chị, hiện tại SkillUp chưa có lớp Múa/Ballet ạ. 💃\n\nTuy nhiên, với định hướng phát triển toàn diện, đây là môn học nằm trong kế hoạch mở rộng của chúng tôi trong tương lai gần.\n\nHiện SkillUp tập trung phát triển sâu về nhóm kỹ năng TƯ DUY & SÁNG TẠO với các môn đã có: Cờ vua, Vẽ, Rèn chữ, Tiền Tiểu học và sắp tới là Toán Soroban.\n\nChúng tôi tin rằng những kỹ năng này sẽ tạo nền tảng vững chắc cho mọi sự phát triển khác của trẻ.',
+                cta: 'Trong khi chờ đợi, anh/chị có thể cho bé thử trải nghiệm lớp Vẽ Mỹ thuật Sáng tạo - cũng là một môn nghệ thuật tuyệt vời giúp bé phát triển cảm xúc, vận động tinh và khả năng biểu đạt đấy ạ!',
+                status: 'Chờ duyệt',
+                updatedBy: 'Phạm Thu Hà',
+                updatedDate: '16/12/2025'
+            }
+        ];
+
+        // SHEET 2: MauChao_TuDong
+        const templateData = [
+            {
+                stt: 1,
+                name: 'Chào ngắn',
+                trigger: 'Lần đầu nhắn tin (trong giờ hành chính)',
+                content: 'Chào anh/chị! SkillUp rất vui được chào đón anh/chị ạ! ❤️\n\nĐể em hỗ trợ anh/chị được nhanh và chính xác nhất, anh/chị vui lòng cho em biết mình quan tâm đến:\n✅ Thông tin môn học nào?\n✅ Bé nhà mình năm nay bao nhiêu tuổi ạ?\n\n*[Gợi ý lựa chọn nhanh: Giới thiệu chung | Thông tin môn học',
+                status: 'Đã duyệt'
+            },
+            {
+                stt: 2,
+                name: 'Chào chi tiết',
+                trigger: 'Lần đầu nhắn tin (ngoài giờ) hoặc tin nhắn để qua đêm',
+                content: 'Kính chào anh/chị! Trung tâm đào tạo kỹ năng SkillUp xin gửi lời chào thân ái ạ! 🌟\n\nVới sứ mệnh "Ươm mầm phát triển, khơi nguồn sáng tạo, truyền cảm hứng học tập suốt đời", SkillUp tự hào là người bạn đồng hành đáng tin cậy cho sự phát triển toàn diện của trẻ từ 3-15 tuổi.\n\nHiện em đang ngoài giờ làm việc (8h-20h). Anh/chị vui lòng để lại thông tin cần hỗ trợ, em sẽ phản hồi sớm nhất vào sáng mai ạ!\n\nTrân trọng cảm ơn!',
+                status: 'Đã duyệt'
+            },
+            {
+                stt: 3,
+                name: 'Chào phản hồi lại',
+                trigger: 'Khi khách nhắn lại lần 2 (có lịch sử chat)',
+                content: 'Chào chị [Tên PH]! Rất vui được gặp lại chị và bé [Tên bé] ạ! 😊\n\nHôm nay chị cần hỗ trợ thêm thông tin gì cho bé không ạ? Em vẫn luôn sẵn sàng đồng hành cùng hai mẹ con!',
+                status: 'Đã duyệt'
+            }
+        ];
+
+        // SHEET 3: TinhHuongDacBiet
+        const situationData = [
+            {
+                stt: 1,
+                type: 'Phàn nàn/lo lắng',
+                keywords: 'chán, không tiến bộ, kém, chậm, học mãi không khá, buồn',
+                content: 'Dạ, trước tiên SkillUp chân thành cảm ơn anh/chị đã tin tưởng chia sẻ điều này ạ. Chúng tôi rất trân trọng và luôn lắng nghe để đồng hành cùng ba mẹ.\n\nViệc học của trẻ là một hành trình dài, và mỗi bé có một tốc độ phát triển, cách tiếp thu riêng. Đôi khi sự tiến bộ không hiện ra ngay ở điểm số, mà ở sự tập trung hơn, hứng thú hơn, hay dám mạnh dạn thể hiện bản thân hơn.\n\nĐể hỗ trợ bé tốt nhất, mình có thể cùng nhau:\n1. Trao đổi trực tiếp với giáo viên đứng lớp để có đánh giá chi tiết nhất về quá trình và điểm cần cải thiện của con.\n2. SkillUp có thể sắp xếp một buổi trao đổi riêng giữa phụ huynh, giáo viên và quản lý đào tạo để cùng tìm ra phương hướng hỗ trợ cá nhân hóa cho bé.',
+                cta: 'Anh/chị có thể sắp xếp một buổi chiều thứ Bảy hoặc sáng Chủ nhật tuần này để chúng ta gặp nhau trực tiếp tại trung tâm, cùng lắng nghe và tháo gỡ khó khăn cho bé được không ạ?',
+                status: 'Đã duyệt'
+            },
+            {
+                stt: 2,
+                type: 'So sánh đối thủ',
+                keywords: 'hơn, kém, so với, khác biệt gì, tốt hơn, tốt nhất',
+                content: 'Dạ, SkillUp tin rằng mỗi trung tâm đều có những thế mạnh và triết lý giáo dục riêng đáng trân trọng ạ. 😊\n\nĐiều chúng tôi tập trung xây dựng và được nhiều phụ huynh ghi nhận là:\n- Triết lý "Học mà chơi, chơi mà học" cân bằng: Giúp con vững kiến thức nhưng không đánh mất sự sáng tạo và niềm vui.\n- Lộ trình cá nhân hóa sâu sát: Giáo viên theo sát từng bé, có nhật ký và phản hồi định kỳ.\n- Môi trường truyền cảm hứng: Từ không gian đến cách giao tiếp, đều hướng tới việc xây dựng sự tự tin, tò mò và tình yêu học tập lâu dài.\n- Đội ngũ tâm huyết như người thân: Yêu trẻ, kiên nhẫn và luôn tìm cách kết nối.\n\nChúng tôi luôn nỗ lực để là người bạn đồng hành đáng tin cậy nhất trên hành trình lớn khôn của con.',
+                cta: 'Điều quan trọng nhất là tìm được môi trường PHÙ HỢP với tính cách và mục tiêu của bé. Anh/chị có thể cho bé đến trải nghiệm thử 1 buổi MIỄN PHÍ để cảm nhận trực tiếp không ạ? Đó sẽ là câu trả lời thuyết phục và chân thực nhất.',
+                status: 'Đã duyệt'
+            },
+            {
+                stt: 3,
+                type: 'Hỏi thông tin chưa có',
+                keywords: 'khi nào có, bao giờ có, tương lai, sau này, có mở lớp',
+                content: 'Dạ, SkillUp rất cảm ơn câu hỏi rất chi tiết và tâm huyết của anh/chị ạ! 💖\n\nVới những thông tin chuyên sâu/chi tiết hoặc liên quan đến kế hoạch phát triển như vậy, để có câu trả lời chính xác và đầy đủ nhất, em sẽ chuyển ngay câu hỏi của anh/chị tới đội ngũ chuyên môn/Quản lý đào tạo.\n\nHọ sẽ liên hệ lại trực tiếp với anh/chị trong vòng 24 giờ làm việc tới để giải đáp tận tình và cung cấp thông tin cập nhật nhất ạ.',
+                cta: 'Trong lúc chờ đợi, anh/chị có cần em hỗ trợ thêm thông tin nào khác về các môn học hiện có của SkillUp không ạ?',
+                status: 'Đã duyệt'
+            },
+            {
+                stt: 4,
+                type: 'Yêu cầu gặp nhân viên',
+                keywords: 'gặp nhân viên, gặp tư vấn viên, muốn nói chuyện trực tiếp, gọi điện',
+                content: 'Dạ, SkillUp rất hoan nghênh việc anh/chị muốn trao đổi trực tiếp để được tư vấn kỹ càng và cảm nhận rõ hơn về môi trường ạ! 📞\n\nHiện tại, đội ngũ tư vấn viên của chúng tôi có thể hỗ trợ anh/chị qua điện thoại hoặc gặp mặt trực tiếp tại trung tâm.\n\nChúng tôi luôn sẵn sàng lắng nghe và đồng hành.',
+                cta: 'Để em sắp xếp lịch hẹn phù hợp và chuyên nghiệp nhất, anh/chị vui lòng cho em biết khung giờ nào thuận tiện nhất trong 2 ngày tới ạ? (Ví dụ: Sáng/Chiều/Tối, thứ mấy). Em sẽ báo lại lịch hẹn cụ thể ngay ạ.',
+                status: 'Đã duyệt'
+            },
+            {
+                stt: 5,
+                type: 'Nhắn cảm ơn sau tư vấn',
+                keywords: 'cảm ơn, tạm biệt, hẹn gặp lại',
+                content: 'Chào chị [Tên PH]!\n\nEm cảm ơn chị đã dành thời gian trao đổi và tin tưởng SkillUp ạ. Hy vọng những thông tin trên đã phần nào giải đáp được băn khoăn của chị.\n\nHành trình phát triển của bé luôn cần sự đồng hành từ gia đình và nhà trường. SkillUp luôn sẵn sàng là người bạn đồng hành đáng tin cậy.\n\nKhi nào chị cần hỗ trợ thêm hoặc quyết định đặt lịch cho bé trải nghiệm, chị cứ nhắn tin trực tiếp cho em nhé!\n\nChúc gia đình mình một ngày thật vui vẻ và ấm áp ạ! ❤️\n\nTrân trọng,\nĐội ngũ SkillUp Center.',
+                cta: '(Không cần CTA)',
+                status: 'Đã duyệt'
+            }
+        ];
+
+        // ==================== HÀM XỬ LÝ ====================
+
+        function switchTab(event, tabName) {
+            event.preventDefault();
+            
+            // Ẩn tất cả tab content
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Xóa active từ tất cả button
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Hiển thị tab được chọn
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Khởi tạo nội dung tab
+            if (tabName === 'faq') {
+                initFAQ();
+            } else if (tabName === 'templates') {
+                initTemplate();
+            } else if (tabName === 'situations') {
+                initSituation();
+            }
+        }
+
+        // ==================== TAB 1: FAQ ====================
+
+        function initFAQ() {
+            // Kiểm tra nếu đã khởi tạo
+            if (document.getElementById('faqFilterOptions').innerHTML) return;
+            
+            const groups = [...new Set(faqData.map(f => f.group))];
+            const filterOpts = document.getElementById('faqFilterOptions');
+            
+            let html = '<button class="filter-btn active" onclick="filterFAQ(event, \'all\')">🏷️ Tất Cả</button>';
+            groups.forEach(group => {
+                html += `<button class="filter-btn" onclick="filterFAQ(event, '${group}')">📂 ${group}</button>`;
+            });
+            filterOpts.innerHTML = html;
+            
+            displayFAQ(faqData);
+            document.getElementById('totalFAQ').textContent = faqData.length;
+        }
+
+        function displayFAQ(data) {
+            const resultsDiv = document.getElementById('faqResults');
+            resultsDiv.innerHTML = '';
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">😕 Không tìm thấy câu hỏi phù hợp</div>';
+                document.getElementById('displayFAQ').textContent = '0';
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'faq-card';
+                card.innerHTML = `
+                    <span class="faq-tag">📂 ${item.group}</span>
+                    <h3>${item.title}</h3>
+                    <p class="question-text"><strong>❓ Câu hỏi:</strong> ${item.question}</p>
+                    ${item.variations ? `<p class="question-text"><strong>🔄 Biến thể:</strong> ${item.variations}</p>` : ''}
+                    
+                    <div class="answer-section">
+                        <div class="answer-title">✅ Trả lời:</div>
+                        <div class="answer-content">${item.answer}</div>
+                        <div class="cta-box">
+                            <strong>💬 Hành động tiếp theo:</strong><br>
+                            ${item.cta}
+                        </div>
+                    </div>
+
+                    <div class="meta-info">
+                        <span class="meta-item">👤 ${item.updatedBy}</span>
+                        <span class="meta-item">📅 ${item.updatedDate}</span>
+                        <span class="meta-item">✓ ${item.status}</span>
+                    </div>
+
+                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.answer)}')">📋 Sao chép câu trả lời</button>
+                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.cta)}')">📋 Sao chép CTA</button>
+                `;
+                resultsDiv.appendChild(card);
+            });
+
+            document.getElementById('displayFAQ').textContent = data.length;
+        }
+
+        function searchFAQ() {
+            const keyword = document.getElementById('faqSearch').value.toLowerCase();
+            
+            if (!keyword) {
+                displayFAQ(faqData);
+                return;
+            }
+
+            const filtered = faqData.filter(item =>
+                item.title.toLowerCase().includes(keyword) ||
+                item.question.toLowerCase().includes(keyword) ||
+                item.variations.toLowerCase().includes(keyword) ||
+                item.answer.toLowerCase().includes(keyword) ||
+                item.group.toLowerCase().includes(keyword) ||
+                item.cta.toLowerCase().includes(keyword)
+            );
+            
+            displayFAQ(filtered);
+        }
+
+        function filterFAQ(event, group) {
+            event.preventDefault();
+            
+            document.querySelectorAll('#faqFilterOptions .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Xóa text tìm kiếm
+            document.getElementById('faqSearch').value = '';
+
+            if (group === 'all') {
+                displayFAQ(faqData);
+            } else {
+                const filtered = faqData.filter(item => item.group === group);
+                displayFAQ(filtered);
+            }
+        }
+
+        function clearFAQSearch() {
+            document.getElementById('faqSearch').value = '';
+            document.querySelectorAll('#faqFilterOptions .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('#faqFilterOptions .filter-btn').classList.add('active');
+            displayFAQ(faqData);
+        }
+
+        // ==================== TAB 2: TEMPLATES ====================
+
+        function initTemplate() {
+            displayTemplate(templateData);
+            document.getElementById('totalTemplate').textContent = templateData.length;
+        }
+
+        function displayTemplate(data) {
+            const resultsDiv = document.getElementById('templateResults');
+            resultsDiv.innerHTML = '';
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">😕 Không tìm thấy mẫu phù hợp</div>';
+                document.getElementById('displayTemplate').textContent = '0';
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'faq-card';
+                card.innerHTML = `
+                    <h3>💬 ${item.name}</h3>
+                    <p><strong>⚡ Kích hoạt khi:</strong> ${item.trigger}</p>
+                    
+                    <div class="answer-section">
+                        <div class="answer-title">📝 Nội dung mẫu:</div>
+                        <div class="answer-content">${item.content}</div>
+                    </div>
+
+                    <div class="meta-info">
+                        <span class="meta-item">✓ ${item.status}</span>
+                    </div>
+
+                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.content)}')">📋 Sao chép mẫu</button>
+                `;
+                resultsDiv.appendChild(card);
+            });
+
+            document.getElementById('displayTemplate').textContent = data.length;
+        }
+
+        function searchTemplate() {
+            const keyword = document.getElementById('templateSearch').value.toLowerCase();
+            if (!keyword) {
+                displayTemplate(templateData);
+                return;
+            }
+
+            const filtered = templateData.filter(item =>
+                item.name.toLowerCase().includes(keyword) ||
+                item.trigger.toLowerCase().includes(keyword) ||
+                item.content.toLowerCase().includes(keyword)
+            );
+            displayTemplate(filtered);
+        }
+
+        function clearTemplateSearch() {
+            document.getElementById('templateSearch').value = '';
+            displayTemplate(templateData);
+        }
+
+        // ==================== TAB 3: SITUATIONS ====================
+
+        function initSituation() {
+            displaySituation(situationData);
+            document.getElementById('totalSituation').textContent = situationData.length;
+        }
+
+        function displaySituation(data) {
+            const resultsDiv = document.getElementById('situationResults');
+            resultsDiv.innerHTML = '';
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">😕 Không tìm thấy tình huống phù hợp</div>';
+                document.getElementById('displaySituation').textContent = '0';
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'faq-card';
+                card.innerHTML = `
+                    <span class="faq-tag">⚡ ${item.type}</span>
+                    <h3>🎯 Tình huống ${item.stt}: ${item.type}</h3>
+                    <p><strong>🔑 Từ khóa phát hiện:</strong> ${item.keywords}</p>
+                    
+                    <div class="answer-section">
+                        <div class="answer-title">✅ Nội dung trả lời:</div>
+                        <div class="answer-content">${item.content}</div>
+                        ${item.cta !== '(Không cần CTA)' ? `
+                        <div class="cta-box">
+                            <strong>💬 Hành động tiếp theo:</strong><br>
+                            ${item.cta}
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="meta-info">
+                        <span class="meta-item">✓ ${item.status}</span>
+                    </div>
+
+                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.content)}')">📋 Sao chép nội dung</button>
+                    ${item.cta !== '(Không cần CTA)' ? `<button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.cta)}')">📋 Sao chép CTA</button>` : ''}
+                `;
+                resultsDiv.appendChild(card);
+            });
+
+            document.getElementById('displaySituation').textContent = data.length;
+        }
+
+        function searchSituation() {
+            const keyword = document.getElementById('situationSearch').value.toLowerCase();
+            if (!keyword) {
+                displaySituation(situationData);
+                return;
+            }
+
+            const filtered = situationData.filter(item =>
+                item.type.toLowerCase().includes(keyword) ||
+                item.keywords.toLowerCase().includes(keyword) ||
+                item.content.toLowerCase().includes(keyword) ||
+                item.cta.toLowerCase().includes(keyword)
+            );
+            displaySituation(filtered);
+        }
+
+        function clearSituationSearch() {
+            document.getElementById('situationSearch').value = '';
+            displaySituation(situationData);
+        }
+
+        // ==================== UTILITY ====================
+
+        function copyToClipboard(button, text) {
+            const actualText = text.replace(/\\\//g, '/').replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/\\n/g, '\n');
+            
+            navigator.clipboard.writeText(actualText).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✅ Đã sao chép!';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 1500);
+            }).catch(err => {
+                console.error('Lỗi sao chép:', err);
+                alert('Không thể sao chép. Vui lòng thử lại!');
+            });
+        }
+
+        function escapeTxt(text) {
+            return text
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        }
+
+        // ==================== KHỞI TẠO ====================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Ứng dụng FAQ SkillUp đã tải xong!');
+            console.log('📊 FAQ:', faqData.length, 'câu hỏi');
+            console.log('💬 Template:', templateData.length, 'mẫu');
+            console.log('⚡ Situations:', situationData.length, 'tình huống');
+
+            // Gắn sự kiện Enter cho search
+            document.getElementById('faqSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') searchFAQ();
+            });
+            document.getElementById('templateSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') searchTemplate();
+            });
+            document.getElementById('situationSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') searchSituation();
+            });
+
+            // Khởi tạo FAQ tab
+            initFAQ();
+        });
+    </script>
+</body>
+</html>
