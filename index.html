@@ -3,8 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❓ FAQ SkillUp Center - Tra Cứu Nhanh</title>
+    <title>🎯 SkillUp FAQ Master Pro v2.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --gray: #718096;
+            --bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+            --input-bg: #ffffff;
+            --shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
+            --secondary: #a78bfa;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --light: #1e293b;
+            --dark: #f1f5f9;
+            --gray: #94a3b8;
+            --bg-main: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #334155;
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,62 +52,199 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-main);
             min-height: 100vh;
             padding: 15px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
+        /* Login Screen */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .login-box h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .login-box p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1em;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-main);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-error {
+            color: var(--danger);
+            margin-top: 15px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        /* Header */
         header {
             text-align: center;
             color: white;
-            margin-bottom: 25px;
-            animation: slideDown 0.6s ease-out;
+            margin-bottom: 20px;
         }
 
         header h1 {
-            font-size: 2.3em;
+            font-size: 2.2em;
             margin-bottom: 8px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        header p {
-            font-size: 1em;
-            opacity: 0.95;
+        .header-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
         }
 
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Tabs */
         .tabs-nav {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .tab-btn {
-            padding: 12px 24px;
-            background: white;
-            color: #667eea;
+            padding: 12px 20px;
+            background: var(--card-bg);
+            color: var(--primary);
             border: none;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 0.95em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
 
         .tab-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
 
@@ -81,12 +257,189 @@
             display: block;
         }
 
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+        }
+
+        .form-label .hint {
+            font-weight: normal;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-textarea.large {
+            min-height: 200px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--light);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9em;
+        }
+
+        .checkbox-item:hover {
+            background: var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Search Section */
         .search-section {
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
         }
 
         .search-container {
@@ -100,189 +453,214 @@
             flex: 1;
             min-width: 250px;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1em;
-            transition: all 0.3s ease;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         .search-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn {
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-clear {
-            background: #f0f0f0;
-            color: #333;
-            border: 2px solid #e0e0e0;
-            box-shadow: none;
-        }
-
-        .btn-clear:hover {
-            background: #e8e8e8;
-        }
-
-        .filters-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .filter-label {
-            display: block;
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 0.95em;
+            border-color: var(--primary);
         }
 
         .filter-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
         }
 
         .filter-btn {
-            padding: 8px 12px;
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
+            padding: 8px 14px;
+            background: var(--light);
+            border: 2px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9em;
             font-weight: 500;
-            transition: all 0.3s ease;
-            color: #333;
+            transition: all 0.3s;
+            color: var(--text-primary);
         }
 
         .filter-btn:hover {
-            border-color: #667eea;
-            background: #f0f0f0;
+            border-color: var(--primary);
         }
 
         .filter-btn.active {
-            background: #667eea;
+            background: var(--primary);
             color: white;
-            border-color: #667eea;
+            border-color: var(--primary);
         }
 
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 100px;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        /* Results Grid */
         .results-section {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 20px;
         }
 
+        /* FAQ Card */
         .faq-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             transition: all 0.3s ease;
-            border-left: 5px solid #667eea;
+            border-left: 5px solid var(--primary);
+            position: relative;
         }
 
         .faq-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-left-color: #764ba2;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
         }
 
         .faq-card h3 {
-            color: #667eea;
-            margin-bottom: 12px;
+            color: var(--primary);
+            margin-bottom: 10px;
             font-size: 1.1em;
-            word-break: break-word;
+            padding-right: 100px;
         }
 
         .faq-tag {
             display: inline-block;
-            background: #f0f0f0;
-            color: #667eea;
+            background: var(--light);
+            color: var(--primary);
             padding: 4px 10px;
             border-radius: 20px;
-            font-size: 0.8em;
-            margin-bottom: 10px;
+            font-size: 0.75em;
+            margin-bottom: 8px;
+            margin-right: 5px;
             font-weight: 600;
         }
 
+        .faq-tag.type {
+            background: #e6fffa;
+            color: #319795;
+        }
+
+        [data-theme="dark"] .faq-tag.type {
+            background: #134e4a;
+            color: #5eead4;
+        }
+
+        .faq-tag.priority-high {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        [data-theme="dark"] .faq-tag.priority-high {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+
         .question-text {
-            color: #555;
+            color: var(--text-secondary);
             margin: 10px 0;
             font-style: italic;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
 
         .answer-section {
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 2px solid #f0f0f0;
+            border-top: 2px solid var(--border-color);
         }
 
         .answer-title {
-            color: #667eea;
+            color: var(--primary);
             font-weight: 600;
             margin-bottom: 10px;
+            font-size: 0.95em;
         }
 
         .answer-content {
-            color: #555;
+            color: var(--text-secondary);
             line-height: 1.7;
             margin-bottom: 15px;
             white-space: pre-wrap;
             word-wrap: break-word;
-            font-size: 0.95em;
+            font-size: 0.9em;
+            max-height: 180px;
+            overflow-y: auto;
         }
 
         .cta-box {
-            background: #f0f5ff;
-            border-left: 4px solid #667eea;
+            background: var(--light);
+            border-left: 4px solid var(--primary);
             padding: 12px;
             border-radius: 6px;
             margin-top: 12px;
-            font-size: 0.95em;
-            color: #555;
+            font-size: 0.9em;
+            color: var(--text-secondary);
             line-height: 1.6;
         }
 
         .meta-info {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 12px;
             padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
-            font-size: 0.85em;
-            color: #999;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.75em;
+            color: var(--text-secondary);
             flex-wrap: wrap;
         }
 
-        .meta-item {
+        /* Card Actions */
+        .card-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             display: flex;
-            align-items: center;
-            gap: 4px;
+            gap: 5px;
+        }
+
+        .card-actions .btn {
+            padding: 6px 10px;
+            font-size: 0.8em;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .faq-card:hover .card-actions .btn {
+            opacity: 1;
         }
 
         .copy-btn {
             display: inline-block;
             padding: 6px 12px;
-            background: #667eea;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 5px;
@@ -295,781 +673,1731 @@
         }
 
         .copy-btn:hover {
-            background: #764ba2;
+            background: var(--secondary);
         }
 
         .copy-btn.copied {
-            background: #28a745;
+            background: var(--success);
         }
 
+        /* Auto Save Settings */
+        .autosave-settings {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .autosave-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .autosave-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .autosave-status.active {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        [data-theme="dark"] .autosave-status.active {
+            background: #14532d;
+            color: #86efac;
+        }
+
+        .autosave-status.inactive {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.active {
+            background: var(--success);
+        }
+
+        .status-dot.inactive {
+            background: var(--danger);
+            animation: none;
+        }
+
+        /* Data Table */
+        .data-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--text-primary);
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tr:hover {
+            background: var(--light);
+        }
+
+        /* Backup Info */
+        .backup-info {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .backup-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--card-bg);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--dark);
+            color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 10000;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); }
+        .toast.show { display: block; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.3em;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 12px 15px;
+            border-radius: 6px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        /* No Results */
         .no-results {
             grid-column: 1 / -1;
             text-align: center;
             padding: 50px 20px;
-            color: #999;
+            color: var(--text-secondary);
             font-size: 1.1em;
         }
 
-        .stats {
-            text-align: center;
-            color: white;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8em;
-            }
-
-            .search-container {
-                flex-direction: column;
-            }
-
-            .btn, .btn-clear {
-                width: 100%;
-            }
-
-            .results-section {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs-nav {
-                flex-direction: column;
-            }
-
-            .tab-btn {
-                width: 100%;
-            }
-        }
-
+        /* Footer */
         .footer {
             text-align: center;
             color: white;
             margin-top: 40px;
             padding: 20px;
             opacity: 0.9;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
-        .info-box {
-            background: rgba(255,255,255,0.1);
-            border-left: 4px solid white;
-            padding: 12px 15px;
-            border-radius: 6px;
-            color: white;
-            margin-bottom: 15px;
-            font-size: 0.95em;
+        /* Keyboard Shortcuts */
+        .shortcuts-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            font-size: 0.8em;
+            display: none;
+            z-index: 1000;
+            max-width: 280px;
+        }
+
+        .shortcuts-panel.show {
+            display: block;
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .shortcut-key {
+            background: var(--light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.5em; }
+            .tabs-nav { flex-direction: column; }
+            .tab-btn { width: 100%; }
+            .form-grid { grid-template-columns: 1fr; }
+            .results-section { grid-template-columns: 1fr; }
+            .stats-bar { flex-direction: column; }
+            .faq-card h3 { padding-right: 0; }
+            .card-actions { position: static; margin-bottom: 10px; }
+            .theme-toggle { top: 10px; right: 10px; width: 40px; height: 40px; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--light); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--gray); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Section Headers in Form */
+        .section-header {
+            color: var(--primary);
+            margin: 25px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 1.1em;
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h1>🎯 SkillUp FAQ Master</h1>
+            <p>Hệ thống Quản lý FAQ Chuyên nghiệp</p>
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>👤 Tên đăng nhập</label>
+                    <input type="text" id="loginUsername" placeholder="Nhập username" required>
+                </div>
+                <div class="form-group">
+                    <label>🔒 Mật khẩu</label>
+                    <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required>
+                </div>
+                <button type="submit" class="login-btn">🚀 Đăng nhập</button>
+                <p class="login-error" id="loginError">❌ Sai tên đăng nhập hoặc mật khẩu!</p>
+            </form>
+            <p style="margin-top: 20px; font-size: 0.8em; color: var(--text-secondary);">
+                Demo: admin / admin123 hoặc user / user123
+            </p>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Đổi giao diện (Ctrl+D)">
+        <span id="themeIcon">🌙</span>
+    </button>
+
+    <!-- Shortcuts Panel -->
+    <div id="shortcutsPanel" class="shortcuts-panel">
+        <h4 style="margin-bottom: 10px;">⌨️ Phím tắt</h4>
+        <div class="shortcut-item">
+            <span>Tìm kiếm</span>
+            <span class="shortcut-key">Ctrl+K</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Thêm mới</span>
+            <span class="shortcut-key">Ctrl+N</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Lưu form</span>
+            <span class="shortcut-key">Ctrl+S</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Dark mode</span>
+            <span class="shortcut-key">Ctrl+D</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Xuất Excel</span>
+            <span class="shortcut-key">Ctrl+E</span>
+        </div>
+        <div class="shortcut-item">
+            <span>Hiện phím tắt</span>
+            <span class="shortcut-key">Ctrl+/</span>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainApp" style="display: none;">
         <header>
-            <h1>❓ FAQ SkillUp Center</h1>
-            <p>Tra cứu nhanh - Tìm kiếm dễ - Sao chép một click</p>
+            <h1>🎯 SkillUp FAQ Master Pro</h1>
+            <p>Hệ thống Quản lý FAQ Chuyên nghiệp v2.0</p>
+            <div class="header-actions">
+                <div class="user-info">
+                    <span>👤</span>
+                    <span id="currentUser">Admin</span>
+                    <span id="userRole" class="faq-tag type">Admin</span>
+                </div>
+                <button class="btn btn-outline" style="color: white; border-color: white;" onclick="logout()">
+                    🚪 Đăng xuất
+                </button>
+            </div>
         </header>
 
+        <!-- Navigation Tabs -->
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab(event, 'faq')">📚 FAQ Câu Hỏi</button>
-            <button class="tab-btn" onclick="switchTab(event, 'templates')">💬 Mẫu Tin Nhắn</button>
-            <button class="tab-btn" onclick="switchTab(event, 'situations')">⚡ Tình Huống Đặc Biệt</button>
+            <button class="tab-btn active" onclick="switchTab(event, 'search')" data-tab="search">🔍 Tra Cứu FAQ</button>
+            <button class="tab-btn" onclick="switchTab(event, 'form')" data-tab="form">📝 Nhập Liệu</button>
+            <button class="tab-btn" onclick="switchTab(event, 'manage')" data-tab="manage">📋 Quản Lý</button>
+            <button class="tab-btn" onclick="switchTab(event, 'templates')" data-tab="templates">💬 Mẫu Tin Nhắn</button>
+            <button class="tab-btn" onclick="switchTab(event, 'situations')" data-tab="situations">⚡ Tình Huống</button>
+            <button class="tab-btn" onclick="switchTab(event, 'backup')" data-tab="backup">💾 Sao Lưu</button>
         </div>
 
-        <!-- TAB 1: FAQ -->
-        <div id="faq" class="tab-content active">
+        <!-- TAB 1: SEARCH -->
+        <div id="search" class="tab-content active">
             <div class="search-section">
                 <div class="info-box">
-                    💡 Mẹo: Tìm kiếm theo câu hỏi hoặc từ khóa | Lọc theo nhóm FAQ | Sao chép nội dung một click
+                    💡 <strong>Mẹo:</strong> Sử dụng <kbd>Ctrl+K</kbd> để focus vào ô tìm kiếm | Hỗ trợ tìm kiếm gần đúng (fuzzy search)
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalFAQStat">0</div>
+                        <div class="stat-label">Tổng FAQ</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="displayFAQStat">0</div>
+                        <div class="stat-label">Đang hiển thị</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="approvedStat">0</div>
+                        <div class="stat-label">Đã duyệt</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="pendingStat">0</div>
+                        <div class="stat-label">Chờ duyệt</div>
+                    </div>
                 </div>
 
                 <div class="search-container">
                     <input 
                         type="text" 
-                        id="faqSearch" 
+                        id="searchInput" 
                         class="search-input" 
-                        placeholder="🔍 Tìm câu hỏi, từ khóa...">
-                    <button class="btn" onclick="searchFAQ()">🔍 Tìm</button>
-                    <button class="btn-clear" onclick="clearFAQSearch()">✕ Xóa</button>
+                        placeholder="🔍 Tìm kiếm (hỗ trợ fuzzy search - gõ gần đúng)...">
+                    <button class="btn btn-primary" onclick="searchFAQ()">🔍 Tìm</button>
+                    <button class="btn btn-outline" onclick="clearSearch()">✕ Xóa</button>
                 </div>
 
-                <div class="filters-section">
-                    <span class="filter-label">📂 Lọc nhóm:</span>
-                    <div class="filter-options" id="faqFilterOptions"></div>
-                </div>
-
-                <div class="stats">
-                    📊 Tổng <span id="totalFAQ">0</span> câu hỏi | Hiển thị <span id="displayFAQ">0</span>
-                </div>
+                <div class="filter-options" id="filterOptions"></div>
             </div>
 
-            <div class="results-section" id="faqResults"></div>
+            <div class="results-section" id="searchResults"></div>
         </div>
 
-        <!-- TAB 2: TEMPLATES -->
+        <!-- TAB 2: FORM INPUT -->
+        <div id="form" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📝 Form Nhập Liệu FAQ</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-outline btn-sm" onclick="clearForm()">🗑️ Xóa Form</button>
+                        <button class="btn btn-success btn-sm" onclick="loadDraft()">📂 Tải Nháp</button>
+                    </div>
+                </div>
+
+                <!-- Auto Save Settings -->
+                <div class="autosave-settings">
+                    <div class="autosave-row">
+                        <label style="font-weight: 600;">⏱️ Tự động lưu:</label>
+                        <select id="autosaveInterval" class="form-select" style="width: auto;" onchange="updateAutosave()">
+                            <option value="0">Tắt</option>
+                            <option value="30">30 giây</option>
+                            <option value="60" selected>1 phút</option>
+                            <option value="120">2 phút</option>
+                            <option value="300">5 phút</option>
+                        </select>
+                        <div id="autosaveStatus" class="autosave-status inactive">
+                            <span class="status-dot inactive"></span>
+                            <span>Chưa kích hoạt</span>
+                        </div>
+                        <span id="lastSaveTime" style="color: var(--text-secondary); font-size: 0.85em;"></span>
+                    </div>
+                </div>
+
+                <form id="faqForm" onsubmit="submitForm(event)">
+                    <!-- Section 1: Phân loại -->
+                    <h3 class="section-header">📁 PHÂN LOẠI CƠ BẢN</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Loại câu hỏi <span class="required">*</span></label>
+                            <select id="loaiCauHoi" class="form-select" required onchange="handleTypeChange()">
+                                <option value="">-- Chọn loại --</option>
+                                <option value="FAQ">FAQ</option>
+                                <option value="Chao_TuDong">Chào tự động</option>
+                                <option value="TinhHuong_DacBiet">Tình huống đặc biệt</option>
+                                <option value="LoTrinh_MonHoc">Lộ trình môn học</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="nhomFAQGroup">
+                            <label class="form-label">Nhóm FAQ <span class="required">*</span></label>
+                            <select id="nhomFAQ" class="form-select">
+                                <option value="">-- Chọn nhóm --</option>
+                                <option value="Giới thiệu">Giới thiệu</option>
+                                <option value="Cờ Vua">Cờ Vua</option>
+                                <option value="Vẽ">Vẽ</option>
+                                <option value="Toán Tư Duy">Toán Tư Duy (Soroban)</option>
+                                <option value="Tiền Tiểu Học">Tiền Tiểu Học</option>
+                                <option value="Rèn Chữ">Rèn Chữ</option>
+                                <option value="Học Phí">Học Phí</option>
+                                <option value="Giáo Viên">Giáo Viên</option>
+                                <option value="Cơ Sở Vật Chất">Cơ Sở Vật Chất</option>
+                                <option value="Đăng Ký">Đăng Ký</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Phân nhóm con</label>
+                            <select id="phanNhomCon" class="form-select">
+                                <option value="">-- Không có --</option>
+                                <option value="Giới thiệu chung">Giới thiệu chung</option>
+                                <option value="Câu hỏi thường gặp">Câu hỏi thường gặp</option>
+                                <option value="Tình huống lớp học">Tình huống lớp học</option>
+                                <option value="Lộ trình cơ bản">Lộ trình cơ bản</option>
+                                <option value="Lộ trình nâng cao">Lộ trình nâng cao</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Tiêu đề ngắn gọn <span class="required">*</span>
+                                <span class="hint">Tối đa 100 ký tự</span>
+                            </label>
+                            <input type="text" id="tieuDe" class="form-input" maxlength="100" required
+                                placeholder="VD: SkillUp Center là trung tâm gì?">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Câu hỏi gốc đầy đủ <span class="required">*</span>
+                                <span class="hint">Câu hỏi tự nhiên mà phụ huynh có thể hỏi</span>
+                            </label>
+                            <textarea id="cauHoiGoc" class="form-textarea" required
+                                placeholder="VD: Cho mình hỏi SkillUp là trung tâm dạy gì vậy?"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Từ khóa -->
+                    <h3 class="section-header">🔑 TỪ KHÓA & KÍCH HOẠT</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Từ khóa chính <span class="required">*</span>
+                                <span class="hint">Phân cách bằng dấu phẩy</span>
+                            </label>
+                            <input type="text" id="tuKhoaChinh" class="form-input" required
+                                placeholder="trung tâm là gì, skillup là gì">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Từ khóa mở rộng</label>
+                            <input type="text" id="tuKhoaMoRong" class="form-input"
+                                placeholder="làm gì ở skillup, skillup dạy gì">
+                        </div>
+
+                        <div class="form-group" id="dieuKienGroup" style="display:none;">
+                            <label class="form-label">Điều kiện kích hoạt</label>
+                            <input type="text" id="dieuKienKichHoat" class="form-input"
+                                placeholder="Lần đầu nhắn tin, Ngoài giờ làm việc">
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Nội dung -->
+                    <h3 class="section-header">💬 NỘI DUNG TRẢ LỜI</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Nội dung trả lời <span class="required">*</span>
+                                <span class="hint">Có thể sử dụng emoji</span>
+                            </label>
+                            <textarea id="noiDungTraLoi" class="form-textarea large" required
+                                placeholder="Dạ thưa anh/chị! 😊&#10;&#10;SkillUp Center là..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                CTA mặc định <span class="required">*</span>
+                                <span class="hint">Lời kêu gọi hành động</span>
+                            </label>
+                            <textarea id="ctaMacDinh" class="form-textarea" required
+                                placeholder="Để em tư vấn chi tiết hơn, anh/chị cho em biết bé năm nay bao nhiêu tuổi ạ?"></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">CTA thay thế</label>
+                            <textarea id="ctaThayThe" class="form-textarea"
+                                placeholder="Ba mẹ có muốn đăng ký buổi học thử MIỄN PHÍ không ạ?"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Phân loại đối tượng -->
+                    <h3 class="section-header">👥 PHÂN LOẠI ĐỐI TƯỢNG</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Môn học liên quan</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item"><input type="checkbox" name="monHoc" value="Cờ Vua"> Cờ Vua</label>
+                                <label class="checkbox-item"><input type="checkbox" name="monHoc" value="Vẽ Mỹ Thuật"> Vẽ</label>
+                                <label class="checkbox-item"><input type="checkbox" name="monHoc" value="Toán Soroban"> Soroban</label>
+                                <label class="checkbox-item"><input type="checkbox" name="monHoc" value="Tiền Tiểu Học"> TTH</label>
+                                <label class="checkbox-item"><input type="checkbox" name="monHoc" value="Rèn Chữ"> Rèn Chữ</label>
+                                <label class="checkbox-item"><input type="checkbox" name="monHoc" value="Tất Cả"> Tất Cả</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Độ tuổi áp dụng</label>
+                            <select id="doTuoi" class="form-select">
+                                <option value="Tất cả">Tất cả</option>
+                                <option value="3-5 tuổi">3-5 tuổi</option>
+                                <option value="6-8 tuổi">6-8 tuổi</option>
+                                <option value="9-12 tuổi">9-12 tuổi</option>
+                                <option value="13-15 tuổi">13-15 tuổi</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Giai đoạn tư vấn</label>
+                            <select id="giaiDoanTuVan" class="form-select">
+                                <option value="Tất cả">Tất cả</option>
+                                <option value="Tìm hiểu ban đầu">Tìm hiểu ban đầu</option>
+                                <option value="Cân nhắc quyết định">Cân nhắc quyết định</option>
+                                <option value="Sẵn sàng đăng ký">Sẵn sàng đăng ký</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Quản lý -->
+                    <h3 class="section-header">⚙️ QUẢN LÝ</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Độ ưu tiên <span class="required">*</span></label>
+                            <input type="number" id="uuTien" class="form-input" min="1" max="100" value="50" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái</label>
+                            <select id="trangThai" class="form-select">
+                                <option value="Chờ duyệt">Chờ duyệt</option>
+                                <option value="Đã duyệt">Đã duyệt</option>
+                                <option value="Tạm ẩn">Tạm ẩn</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email người tạo <span class="required">*</span></label>
+                            <input type="email" id="emailNguoiTao" class="form-input" required
+                                placeholder="nguyen.van.a@skillup.edu.vn">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Ghi chú nội bộ</label>
+                            <textarea id="ghiChuNoiBo" class="form-textarea"
+                                placeholder="Ghi chú cho người duyệt..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="btn-group" style="margin-top: 25px; justify-content: center;">
+                        <button type="submit" class="btn btn-primary">💾 Lưu FAQ (Ctrl+S)</button>
+                        <button type="button" class="btn btn-success" onclick="saveDraft()">📝 Lưu Nháp</button>
+                        <button type="button" class="btn btn-outline" onclick="previewFAQ()">👁️ Xem Trước</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 3: MANAGE -->
+        <div id="manage" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📋 Quản Lý Dữ Liệu</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-success btn-sm" onclick="exportToExcel()">📊 Xuất Excel (Ctrl+E)</button>
+                        <button class="btn btn-warning btn-sm" onclick="exportToCSV()">📄 Xuất CSV</button>
+                        <button class="btn btn-primary btn-sm" onclick="showImportModal()">📥 Nhập File</button>
+                        <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ Xóa Tất Cả</button>
+                    </div>
+                </div>
+
+                <div class="autosave-settings">
+                    <strong>📊 Thống kê:</strong> 
+                    <span id="manageStats">Đang tải...</span>
+                </div>
+
+                <div class="data-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mã</th>
+                                <th>Loại</th>
+                                <th>Nhóm</th>
+                                <th>Tiêu đề</th>
+                                <th>Trạng thái</th>
+                                <th>Ưu tiên</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TEMPLATES -->
         <div id="templates" class="tab-content">
             <div class="search-section">
-                <div class="info-box">
-                    💡 Mẹo: Xem các mẫu tin nhắn tự động | Tìm kiếm | Sao chép nhanh để dùng
-                </div>
-
+                <div class="info-box">💬 Các mẫu tin nhắn chào tự động</div>
                 <div class="search-container">
-                    <input 
-                        type="text" 
-                        id="templateSearch" 
-                        class="search-input" 
-                        placeholder="🔍 Tìm mẫu tin nhắn...">
-                    <button class="btn" onclick="searchTemplate()">🔍 Tìm</button>
-                    <button class="btn-clear" onclick="clearTemplateSearch()">✕ Xóa</button>
-                </div>
-
-                <div class="stats">
-                    📊 Tổng <span id="totalTemplate">0</span> mẫu | Hiển thị <span id="displayTemplate">0</span>
+                    <input type="text" id="templateSearch" class="search-input" placeholder="🔍 Tìm mẫu tin nhắn...">
+                    <button class="btn btn-primary" onclick="searchTemplates()">🔍 Tìm</button>
+                    <button class="btn btn-outline" onclick="clearTemplateSearch()">✕ Xóa</button>
                 </div>
             </div>
-
             <div class="results-section" id="templateResults"></div>
         </div>
 
-        <!-- TAB 3: SITUATIONS -->
+        <!-- TAB 5: SITUATIONS -->
         <div id="situations" class="tab-content">
             <div class="search-section">
-                <div class="info-box">
-                    💡 Mẹo: Xem cách xử lý các tình huống đặc biệt | Tìm theo từ khóa | Sao chép phản hồi
-                </div>
-
+                <div class="info-box">⚡ Xử lý các tình huống đặc biệt: phàn nàn, so sánh, yêu cầu đặc biệt</div>
                 <div class="search-container">
-                    <input 
-                        type="text" 
-                        id="situationSearch" 
-                        class="search-input" 
-                        placeholder="🔍 Tìm tình huống...">
-                    <button class="btn" onclick="searchSituation()">🔍 Tìm</button>
-                    <button class="btn-clear" onclick="clearSituationSearch()">✕ Xóa</button>
-                </div>
-
-                <div class="stats">
-                    📊 Tổng <span id="totalSituation">0</span> tình huống | Hiển thị <span id="displaySituation">0</span>
+                    <input type="text" id="situationSearch" class="search-input" placeholder="🔍 Tìm tình huống...">
+                    <button class="btn btn-primary" onclick="searchSituations()">🔍 Tìm</button>
+                    <button class="btn btn-outline" onclick="clearSituationSearch()">✕ Xóa</button>
                 </div>
             </div>
-
             <div class="results-section" id="situationResults"></div>
         </div>
 
+        <!-- TAB 6: BACKUP -->
+        <div id="backup" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">💾 Sao Lưu & Khôi Phục</h2>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">⏱️ Tự động sao lưu</label>
+                        <select id="autoBackupInterval" class="form-select" onchange="updateAutoBackup()">
+                            <option value="0">Tắt</option>
+                            <option value="3600">Mỗi giờ</option>
+                            <option value="86400" selected>Mỗi ngày</option>
+                            <option value="604800">Mỗi tuần</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📊 Trạng thái</label>
+                        <div id="backupStatus" class="autosave-status active" style="margin-top: 5px;">
+                            <span class="status-dot active"></span>
+                            <span>Đang hoạt động</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin: 20px 0;">
+                    <button class="btn btn-primary" onclick="createBackup()">💾 Tạo Backup Ngay</button>
+                    <button class="btn btn-success" onclick="downloadLatestBackup()">⬇️ Tải Backup Mới Nhất</button>
+                    <button class="btn btn-warning" onclick="showRestoreModal()">🔄 Khôi Phục</button>
+                </div>
+
+                <div class="backup-info">
+                    <h4>📁 Lịch sử Backup (Lưu trên máy)</h4>
+                    <div class="backup-list" id="backupList">
+                        <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
+                            Chưa có backup nào được tạo
+                        </p>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    <strong>📍 Vị trí lưu file:</strong> 
+                    <span id="downloadPath">Thư mục Downloads mặc định của trình duyệt</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
         <div class="footer">
-            <p>🚀 Hệ thống FAQ hoàn chỉnh cho SkillUp Center | Cập nhật: 15/12/2025</p>
-            <p style="margin-top: 10px;">✨ Hỗ trợ tư vấn viên & nhân viên hỗ trợ khách hàng chuyên nghiệp</p>
+            <p>🎯 SkillUp FAQ Master Pro v2.0 | Phím tắt: <kbd>Ctrl+/</kbd></p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">👁️ Xem Trước</h3>
+                <button class="modal-close" onclick="closeModal('previewModal')">&times;</button>
+            </div>
+            <div id="previewContent"></div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📥 Nhập Dữ Liệu</h3>
+                <button class="modal-close" onclick="closeModal('importModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Chọn file (JSON, XLSX, CSV):</label>
+                <input type="file" id="importFile" class="form-input" accept=".json,.xlsx,.csv">
+            </div>
+            <div class="btn-group" style="margin-top: 15px;">
+                <button class="btn btn-primary" onclick="processImport()">📥 Nhập</button>
+                <button class="btn btn-outline" onclick="closeModal('importModal')">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore Modal -->
+    <div id="restoreModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">🔄 Khôi Phục Dữ Liệu</h3>
+                <button class="modal-close" onclick="closeModal('restoreModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Chọn file backup (JSON):</label>
+                <input type="file" id="restoreFile" class="form-input" accept=".json">
+            </div>
+            <div class="info-box">
+                ⚠️ <strong>Lưu ý:</strong> Việc khôi phục sẽ thay thế toàn bộ dữ liệu hiện tại!
+            </div>
+            <div class="btn-group" style="margin-top: 15px;">
+                <button class="btn btn-warning" onclick="processRestore()">🔄 Khôi Phục</button>
+                <button class="btn btn-outline" onclick="closeModal('restoreModal')">Hủy</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // ==================== DỮ LIỆU ====================
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            USERS: {
+                'admin': { password: 'admin123', role: 'admin', name: 'Administrator' },
+                'user': { password: 'user123', role: 'user', name: 'Nhân viên' }
+            },
+            STORAGE_KEYS: {
+                FAQ: 'skillup_faq_db',
+                TEMPLATES: 'skillup_templates_db',
+                SITUATIONS: 'skillup_situations_db',
+                BACKUPS: 'skillup_backups',
+                DRAFT: 'skillup_form_draft',
+                THEME: 'skillup_theme',
+                SESSION: 'skillup_session'
+            }
+        };
 
-        // SHEET 1: CauHoi_FAQ
-        const faqData = [
+        // ==================== STATE ====================
+        let faqDatabase = [];
+        let templateDatabase = [];
+        let situationDatabase = [];
+        let backupHistory = [];
+        let autosaveTimer = null;
+        let autoBackupTimer = null;
+        let currentEditId = null;
+        let currentUser = null;
+
+        // ==================== SAMPLE DATA ====================
+        const sampleFAQData = [
             {
-                stt: 1,
-                group: 'Giới thiệu',
-                question: 'trung tâm là gì',
-                variations: 'skillup là gì, giới thiệu chung, làm gì ở skillup',
-                title: 'SkillUp Center là trung tâm gì?',
-                answer: 'Dạ thưa anh/chị! 😊\n\nSkillUp Center là Trung tâm Đào tạo & Phát triển Kỹ năng toàn diện cho trẻ từ 3 đến 15 tuổi.\n\nĐiểm đặc biệt của SkillUp là sự kết hợp hài hòa giữa phát triển tư duy logic (qua Cờ vua, Toán Soroban) và nuôi dưỡng sáng tạo, cảm xúc (qua Vẽ Mỹ thuật, Rèn chữ). Mỗi khóa học đều được các chuyên gia giáo dục thiết kế nhằm khơi dậy niềm vui học tập, phát triển tiềm năng riêng và xây dựng sự tự tin vững vàng cho trẻ.\n\nSkillUp tin rằng mỗi đứa trẻ đều là một "nhà vô địch" tiềm năng!',
-                cta: 'Để em có thể chia sẻ chi tiết hơn về lộ trình phù hợp nhất cho bé, anh/chị cho em biết bé nhà mình năm nay bao nhiêu tuổi và có sở thích đặc biệt nào không ạ? 🧒',
-                status: 'Đã duyệt',
-                updatedBy: 'Nguyễn Thị Mai',
-                updatedDate: '01/12/2025'
+                id: 1001,
+                maCauHoi: "FAQ-GT-001",
+                loaiCauHoi: "FAQ",
+                nhomFAQ: "Giới thiệu",
+                phanNhomCon: "Giới thiệu chung",
+                tieuDe: "SkillUp Center là trung tâm gì?",
+                cauHoiGoc: "SkillUp là trung tâm gì? Dạy những gì?",
+                tuKhoaChinh: "trung tâm là gì, skillup là gì",
+                tuKhoaMoRong: "giới thiệu chung, làm gì ở skillup",
+                dieuKienKichHoat: "",
+                noiDungTraLoi: "SkillUp Center xin chào ba mẹ! 😊\n\nSkillUp là Trung tâm Đào tạo & Phát triển Kỹ năng toàn diện cho trẻ từ 3 đến 15 tuổi.\n\nĐiểm đặc biệt của SkillUp là sự kết hợp hài hòa giữa phát triển tư duy logic (qua Cờ vua, Toán Soroban) và nuôi dưỡng sáng tạo (qua Vẽ Mỹ thuật, Rèn chữ).\n\nSkillUp tin rằng mỗi đứa trẻ đều là một \"nhà vô địch\" tiềm năng!",
+                ctaMacDinh: "Để em tư vấn chi tiết hơn, Ba Mẹ cho em biết bé nhà mình năm nay bao nhiêu tuổi ạ? 🧒",
+                ctaThayThe: "",
+                monHocLienQuan: "Tất Cả",
+                doTuoi: "Tất cả",
+                giaiDoanTuVan: "Tìm hiểu ban đầu",
+                uuTien: 10,
+                trangThai: "Đã duyệt",
+                nguoiTao: "admin@skillup.edu.vn",
+                ngayTao: new Date().toISOString(),
+                ghiChuNoiBo: ""
             },
             {
-                stt: 2,
-                group: 'Giới thiệu',
-                question: 'học được gì',
-                variations: 'bé học được gì, lợi ích, ích lợi',
-                title: 'Các con sẽ học được gì ở SkillUp?',
-                answer: 'Dạ, đây là câu hỏi rất nhiều ba mẹ quan tâm ạ! 💖\n\nTại SkillUp, ngoài kiến thức chuyên môn từng môn, con sẽ được phát triển toàn diện 4 nhóm kỹ năng vàng:\n1️⃣ Tư duy logic & chiến lược: Qua Cờ vua, Toán Soroban.\n2️⃣ Sáng tạo & cảm thụ nghệ thuật: Qua lớp Vẽ Mỹ thuật Sáng tạo.\n3️⃣ Nền tảng học thuật vững chắc: Qua Tiền Tiểu học, Rèn chữ đẹp.\n4️⃣ Kỹ năng mềm thiết yếu: Sự tập trung, kiên nhẫn, tinh thần trách nhiệm và làm việc nhóm.\n\nQuan trọng nhất, con sẽ tìm thấy niềm vui trong học tập và học cách tự tin thể hiện bản thân.',
-                cta: 'Anh/chị quan tâm nhất đến việc phát triển khía cạnh nào cho bé ạ? Em có thể gợi ý môn học phù hợp nhất.',
-                status: 'Đã duyệt',
-                updatedBy: 'Trần Văn Nam',
-                updatedDate: '02/12/2025'
+                id: 1002,
+                maCauHoi: "FAQ-HP-001",
+                loaiCauHoi: "FAQ",
+                nhomFAQ: "Học Phí",
+                phanNhomCon: "Câu hỏi thường gặp",
+                tieuDe: "Học phí các môn tại SkillUp?",
+                cauHoiGoc: "Học phí bao nhiêu? Chi phí học như thế nào?",
+                tuKhoaChinh: "học phí, giá bao nhiêu, chi phí",
+                tuKhoaMoRong: "đóng tiền, bao tiền, học phí tháng",
+                dieuKienKichHoat: "",
+                noiDungTraLoi: "Dạ, SkillUp luôn nỗ lực mang đến giá trị giáo dục tốt nhất với mức đầu tư hợp lý 💰\n\nHọc phí phụ thuộc vào môn học và số buổi học. Để tư vấn chính xác nhất cùng các gói ưu đãi hiện tại, ba/mẹ vui lòng cho em biết:\n✅ Bộ môn đang quan tâm\n✅ Bé mấy tuổi rồi ạ\n\nSkillUp có nhiều lựa chọn linh hoạt phù hợp với từng gia đình.",
+                ctaMacDinh: "Em sẽ gửi ngay bảng học phí chi tiết. Ba Mẹ cho em xin thông tin trên nhé!",
+                ctaThayThe: "",
+                monHocLienQuan: "Tất Cả",
+                doTuoi: "Tất cả",
+                giaiDoanTuVan: "Cân nhắc quyết định",
+                uuTien: 15,
+                trangThai: "Đã duyệt",
+                nguoiTao: "admin@skillup.edu.vn",
+                ngayTao: new Date().toISOString(),
+                ghiChuNoiBo: ""
             },
             {
-                stt: 3,
-                group: 'Môn học',
-                question: 'cờ vua',
-                variations: 'học cờ, cờ vua trẻ em, cờ vua cho bé, chơi cờ',
-                title: 'Lớp Cờ vua có phù hợp với bé mới bắt đầu?',
-                answer: 'Dạ, hoàn toàn phù hợp ạ! ♟️\n\nLớp Cờ vua tại SkillUp được thiết kế từ cơ bản đến nâng cao, đặc biệt chú trọng việc tạo hứng thú cho trẻ mới làm quen.\n\nCon sẽ không chỉ học luật chơi, mà còn được:\n- Rèn tư duy chiến lược, khả năng quan sát và dự đoán.\n- Phát triển sự tập trung cao độ và tính kiên nhẫn.\n- Học cách tôn trọng đối thủ, ứng xử đẹp khi thắng thua.\n\nGiáo trình của chúng tôi rất sinh động, kết hợp trò chơi, câu chuyện giúp bé tiếp thu tự nhiên. Nhiều phụ huynh đã bất ngờ vì con biết lập kế hoạch và suy nghĩ có hệ thống hơn chỉ sau một khóa.',
-                cta: 'Anh/chị có muốn đăng ký cho bé một buổi học thử MIỄN PHÍ để trải nghiệm không ạ? Em có thể xếp lịch ngay trong tuần này.',
-                status: 'Đã duyệt',
-                updatedBy: 'Lê Hoàng Anh',
-                updatedDate: '03/12/2025'
-            },
-            {
-                stt: 4,
-                group: 'Môn học',
-                question: 'vẽ',
-                variations: 'học vẽ, vẽ sáng tạo, mỹ thuật, hội họa',
-                title: 'Lớp Vẽ sáng tạo khác biệt thế nào?',
-                answer: 'Câu hỏi rất hay ạ! 🎨\n\nKhác với lớp vẽ truyền thống, Vẽ Mỹ thuật Sáng tạo tại SkillUp KHÔNG đặt nặng việc vẽ "giống". Thay vào đó, chúng tôi tập trung:\n\n✨ Khơi nguồn cảm hứng: Từ âm nhạc, câu chuyện, thiên nhiên.\n✨ Đa dạng chất liệu: Bé được "nghịch" với màu nước, sáp dầu, đất nặn, tranh cắt dán (collage).\n✨ Phát triển tư duy hình ảnh: Mỗi bức tranh là một câu chuyện con muốn kể.\n\nMục tiêu lớn nhất là nuôi dưỡng sự tự tin trong biểu đạt, tình yêu cái đẹp và một tâm hồn phong phú.',
-                cta: 'Chị có thể cho em xem một vài nét vẽ "tự do" của bé không ạ? Để giáo viên có thể cảm nhận và tư vấn lớp phù hợp nhất.',
-                status: 'Đã duyệt',
-                updatedBy: 'Phạm Thu Hà',
-                updatedDate: '04/12/2025'
-            },
-            {
-                stt: 5,
-                group: 'Môn học',
-                question: 'soroban',
-                variations: 'toán soroban, toán tư duy, tính nhẩm, bàn tính',
-                title: 'Toán Soroban có lợi ích gì đặc biệt?',
-                answer: 'Dạ, đây là môn học phát triển trí tuệ toàn diện mà SkillUp rất tâm huyết! 🧮\n\nToán Soroban (bàn tính Nhật Bản) không chỉ giúp bé tính toán siêu nhanh, mà còn:\n- Tăng cường khả năng tập trung và ghi nhớ (trí nhớ hình ảnh).\n- Phát triển đồng đều cả 2 bán cầu não: Trái (tính toán logic) và Phải (tưởng tượng hình ảnh bàn tính).\n- Rèn tư duy xử lý thông tin nhanh, chính xác.\n- Xây dựng nền tảng vững chắc và niềm yêu thích Toán học.\n\nChương trình được xây dựng bài bản, "học mà chơi", không tạo áp lực.',
-                cta: 'Hiện SkillUp đang mở danh sách đăng ký sớm với ƯU ĐÃI ĐẶC BIỆT. Anh/chị có muốn đăng ký giữ chỗ để nhận thông báo đầu tiên và ưu đãi tốt nhất không ạ?',
-                status: 'Đã duyệt',
-                updatedBy: 'Nguyễn Văn Minh',
-                updatedDate: '05/12/2025'
-            },
-            {
-                stt: 6,
-                group: 'Môn học',
-                question: 'tiền tiểu học',
-                variations: 'chuẩn bị vào lớp 1, lớp 1, hành trang lớp 1',
-                title: 'Lớp Tiền Tiểu học dạy những gì?',
-                answer: 'Dạ, đây là lớp được các ba mẹ có con 5-6 tuổi quan tâm nhiều nhất ạ! 📚\n\nChúng tôi không chỉ dạy chữ, số, mà quan trọng hơn là chuẩn bị tâm thế sẵn sàng cho bé:\n\n✅ Làm quen chữ cái, số đếm, phát triển ngôn ngữ.\n✅ Rèn kỹ năng cầm bút, tư thế ngồi đúng.\n✅ Phát triển khả năng tập trung, nghe và làm theo hướng dẫn.\n✅ Kỹ năng xã hội: Làm quen bạn mới, biết chia sẻ, xếp hàng.\n\nMục tiêu: Giúp bé tự tin, vui vẻ, không bỡ ngỡ và yêu thích đi học.',
-                cta: 'SkillUp có lớp học thử miễn phí để ba mẹ và bé cảm nhận. Chị có muốn đặt lịch cho bé trải nghiệm không ạ?',
-                status: 'Đã duyệt',
-                updatedBy: 'Hoàng Thị Lan',
-                updatedDate: '06/12/2025'
-            },
-            {
-                stt: 7,
-                group: 'Môn học',
-                question: 'rèn chữ',
-                variations: 'luyện chữ, chữ đẹp, viết chữ đẹp, luyện viết',
-                title: 'Lớp Rèn chữ có giúp con viết nhanh hơn?',
-                answer: 'Chắc chắn rồi ạ! ✍️\n\nLớp Rèn chữ đẹp tại SkillUp không chỉ giúp chữ đẹp lên trông thấy, mà còn giúp con viết đúng, viết nhanh và viết có ý thức hơn.\n\nChúng tôi tập trung:\n1. Sửa tư thế ngồi, cách cầm bút đúng ngay từ đầu.\n2. Luyện nét cơ bản, liên kết chữ theo chuẩn Bộ GD&ĐT.\n3. Rèn tính kiên nhẫn, tỉ mỉ và thẩm mỹ về chữ viết.\n\nGiáo viên sẽ theo sát từng bé, vì mỗi con có một điểm cần cải thiện khác nhau.',
-                cta: 'Anh/chị có thể cho em biết bé đang học lớp mấy và gửi em xem 1-2 dòng chữ bé viết được không ạ? Để giáo viên tư vấn lộ trình phù hợp.',
-                status: 'Đã duyệt',
-                updatedBy: 'Trần Văn Nam',
-                updatedDate: '07/12/2025'
-            },
-            {
-                stt: 8,
-                group: 'Học phí',
-                question: 'học phí',
-                variations: 'giá bao nhiêu, chi phí, đóng tiền, bao tiền',
-                title: 'Học phí các môn tại SkillUp?',
-                answer: 'Dạ, SkillUp luôn nỗ lực mang đến giá trị giáo dục tốt nhất với mức đầu tư hợp lý, thưa anh/chị. 💰\n\nHọc phí phụ thuộc vào môn học, độ tuổi và số buổi/tuần. Để có báo giá chính xác nhất cùng các gói ưu đãi hiện tại (đăng ký sớm, combo môn, cho anh chị em), anh/chị vui lòng cho em biết:\n1. Bé quan tâm môn nào?\n2. Bé năm nay bao nhiêu tuổi ạ?\n\nChúng tôi có nhiều lựa chọn linh hoạt để phù hợp với nhu cầu của gia đình.',
-                cta: 'Em sẽ gửi ngay bảng học phí chi tiết và tư vấn lộ trình tối ưu nhất. Anh/chị cho em xin thông tin trên nhé!',
-                status: 'Đã duyệt',
-                updatedBy: 'Nguyễn Thị Mai',
-                updatedDate: '08/12/2025'
-            },
-            {
-                stt: 9,
-                group: 'Học phí',
-                question: 'ưu đãi',
-                variations: 'giảm giá, khuyến mãi, combo, học thử',
-                title: 'Có ưu đãi gì khi đăng ký?',
-                answer: 'Dạ có ạ! 🎁 SkillUp luôn trân trọng sự tin tưởng sớm từ Quý phụ huynh.\n\nHiện tại chúng tôi đang có:\n- Giảm ngay 10-15% học phí cho học viên đăng ký trước khai giảng.\n- Tặng balo, bộ dụng cụ học tập xinh xắn trị giá 300.000đ.\n- Ưu đãi COMBO đặc biệt (tiết kiệm đến 20%) khi đăng ký 2 môn trở lên.\n- Học thử MIỄN PHÍ trải nghiệm thực tế.\n\nƯu đãi có thể thay đổi theo thời điểm.',
-                cta: 'Để nhận thông tin ưu đãi chính xác và tốt nhất cho môn học mình quan tâm, anh/chị có thể cho em biết bé dự định học môn nào ạ?',
-                status: 'Đã duyệt',
-                updatedBy: 'Lê Hoàng Anh',
-                updatedDate: '09/12/2025'
-            },
-            {
-                stt: 10,
-                group: 'Học phí',
-                question: 'lịch học',
-                variations: 'thời gian học, lịch khai giảng, ca học',
-                title: 'Lịch học các môn thế nào?',
-                answer: 'Dạ, lịch học tại SkillUp được sắp xếp rất linh hoạt ạ! 🗓️\n\nChúng tôi có các ca học:\n- Sáng thứ 7, Chủ nhật (8h00 - 11h00)\n- Chiều trong tuần (17h30 - 19h00)\n- Tối thứ 7 (18h00 - 19h30)\n\nMỗi môn có nhiều ca khác nhau để phù hợp với lịch sinh hoạt của bé và gia đình.',
-                cta: 'Để em gửi lịch học chi tiết của từng môn, anh/chị vui lòng cho biết bé quan tâm môn nào và thời gian rảnh của bé (sáng/chiều/tối, ngày nào) để em tư vấn ca học phù hợp ạ.',
-                status: 'Đã duyệt',
-                updatedBy: 'Phạm Thu Hà',
-                updatedDate: '10/12/2025'
-            },
-            {
-                stt: 11,
-                group: 'Giáo viên',
-                question: 'giáo viên',
-                variations: 'thầy cô giáo, giảng viên, giáo viên thế nào',
-                title: 'Giáo viên của SkillUp có kinh nghiệm không?',
-                answer: 'Dạ, chắc chắn ạ! 👩‍🏫👨‍🏫\n\nSkillUp hiểu rằng "Cô giáo là mẹ hiền thứ hai". Đội ngũ giáo viên của chúng tôi được tuyển chọn kỹ lưỡng với 3 tiêu chí vàng:\n1. CHUYÊN MÔN VỮNG: Tốt nghiệp đúng chuyên ngành, có chứng chỉ sư phạm.\n2. KINH NGHIỆM & TÂM LÝ: Ít nhất 3 năm kinh nghiệm, am hiểu tâm lý lứa tuổi.\n3. TÂM HUYẾT & YÊU TRẺ: Có sự kiên nhẫn, khả năng truyền cảm hứng và thực sự yêu thương trẻ.\n\nTất cả giáo viên đều được đào tạo định kỳ về phương pháp sư phạm hiện đại.',
-                cta: 'Cách tốt nhất là gặp trực tiếp ạ! Anh/chị có muốn đặt lịch học thử để bé được gặp cô giáo và trải nghiệm không khí lớp học không?',
-                status: 'Đã duyệt',
-                updatedBy: 'Nguyễn Văn Minh',
-                updatedDate: '11/12/2025'
-            },
-            {
-                stt: 12,
-                group: 'Cơ sở vật chất',
-                question: 'phòng học',
-                variations: 'cơ sở vật chất, an toàn, thiết bị',
-                title: 'Phòng học có an toàn cho trẻ nhỏ không?',
-                answer: 'Dạ, đây là ưu tiên SỐ 1 của SkillUp, thưa anh/chị ạ! ✅\n\nChúng tôi đầu tư bài bản để tạo môi trường học tập AN TOÀN TUYỆT ĐỐI:\n- Phòng học rộng rãi, đầy đủ ánh sáng tự nhiên, điều hòa.\n- Thiết kế an toàn: Góc tường bo tròn, ổ điện cao, sàn chống trượt.\n- Vệ sinh khử khuẩn định kỳ hàng ngày.\n- Camera giám sát công cộng (phụ huynh có thể xem qua app).\n- Bảo vệ trực tại sảnh trong suốt giờ học.\n\nSkillUp luôn cởi mở chào đón phụ huynh đến tham quan thực tế trước khi quyết định.',
-                cta: 'Anh/chị có thể đến tham quan trung tâm bất cứ lúc nào trong giờ làm việc (8h-20h). Em có thể đặt lịch đón tiếp anh/chị nếu cần ạ.',
-                status: 'Đã duyệt',
-                updatedBy: 'Hoàng Thị Lan',
-                updatedDate: '12/12/2025'
-            },
-            {
-                stt: 13,
-                group: 'Đăng ký',
-                question: 'học thử',
-                variations: 'đăng ký học thử, trải nghiệm, thử nghiệm',
-                title: 'Đăng ký học thử thế nào?',
-                answer: 'Rất đơn giản và nhanh chóng ạ! ✨\n\nAnh/chị chỉ cần cung cấp cho em:\n1. Họ tên bé & Số tuổi.\n2. Môn học muốn trải nghiệm.\n3. Số điện thoại phụ huynh.\n\nEm sẽ xếp lịch học thử MIỄN PHÍ 60 phút và gửi ngay thông tin xác nhận chi tiết (thời gian, địa điểm, giáo viên) qua tin nhắn này.',
-                cta: 'Mình muốn đặt lịch cho bé học thử môn nào ạ? Em check lịch và xếp ngay cho bé nhé!',
-                status: 'Đã duyệt',
-                updatedBy: 'Trần Văn Nam',
-                updatedDate: '13/12/2025'
-            },
-            {
-                stt: 14,
-                group: 'Đăng ký',
-                question: 'thủ tục',
-                variations: 'đăng ký chính thức, làm hồ sơ, cần gì',
-                title: 'Cần mang gì khi đăng ký chính thức?',
-                answer: 'Dạ, khi quyết định đăng ký chính thức cho bé, anh/chị có thể liên hệ đăng ký online qua zalo, facebook hoặc trực tiếp tại Trung tâm. Mọi thủ tục còn lại, nhân viên SkillUp sẽ hỗ trợ anh/chị hoàn tất nhanh chóng và thuận tiện nhất.',
-                cta: 'Mình muốn đặt lịch cho bé học, đăng ký môn nào ạ?',
-                status: 'Đã duyệt',
-                updatedBy: 'Nguyễn Thị Mai',
-                updatedDate: '14/12/2025'
-            },
-            {
-                stt: 15,
-                group: 'Đăng ký',
-                question: 'độ tuổi',
-                variations: 'bé 4 tuổi học gì, 8 tuổi học gì',
-                title: 'Con tôi 10 tuổi thì học được môn gì?',
-                answer: 'Dạ, với bé 10 tuổi, đây là độ tuổi tuyệt vời để phát triển tư duy chiến sâu và kỹ năng học tập, thưa anh/chị! 🌟\n\nSkillUp gợi ý các môn phù hợp và bổ ích nhất:\n- Cờ vua nâng cao: Phát triển tư duy chiến lược, tính toán nước đi.\n- Toán Soroban: Rèn trí não, khả năng tính nhẩm siêu tốc.\n- Rèn chữ đẹp & Tốc ký: Giúp viết nhanh, đẹp, hỗ trợ việc học trên lớp.\n\nChúng tôi sẽ có bài kiểm tra đầu vào nhẹ nhàng để xếp lớp phù hợp với trình độ của bé.',
-                cta: 'Để em tư vấn cụ thể hơn, anh/chị cho em biết bé có sở thích hoặc điểm mạnh đặc biệt nào không ạ? (Ví dụ: thích tính toán, thích vẽ, hay thích suy nghĩ logic).',
-                status: 'Đã duyệt',
-                updatedBy: 'Lê Hoàng Anh',
-                updatedDate: '15/12/2025'
-            },
-            {
-                stt: 16,
-                group: 'Môn học mở rộng',
-                question: 'múa',
-                variations: 'học múa, ballet, nhảy múa',
-                title: 'SkillUp có lớp múa không?',
-                answer: 'Dạ, thưa anh/chị, hiện tại SkillUp chưa có lớp Múa/Ballet ạ. 💃\n\nTuy nhiên, với định hướng phát triển toàn diện, đây là môn học nằm trong kế hoạch mở rộng của chúng tôi trong tương lai gần.\n\nHiện SkillUp tập trung phát triển sâu về nhóm kỹ năng TƯ DUY & SÁNG TẠO với các môn đã có: Cờ vua, Vẽ, Rèn chữ, Tiền Tiểu học và sắp tới là Toán Soroban.\n\nChúng tôi tin rằng những kỹ năng này sẽ tạo nền tảng vững chắc cho mọi sự phát triển khác của trẻ.',
-                cta: 'Trong khi chờ đợi, anh/chị có thể cho bé thử trải nghiệm lớp Vẽ Mỹ thuật Sáng tạo - cũng là một môn nghệ thuật tuyệt vời giúp bé phát triển cảm xúc, vận động tinh và khả năng biểu đạt đấy ạ!',
-                status: 'Chờ duyệt',
-                updatedBy: 'Phạm Thu Hà',
-                updatedDate: '16/12/2025'
+                id: 1003,
+                maCauHoi: "FAQ-CV-001",
+                loaiCauHoi: "FAQ",
+                nhomFAQ: "Cờ Vua",
+                phanNhomCon: "Giới thiệu chung",
+                tieuDe: "Cờ vua phù hợp với bé mới bắt đầu?",
+                cauHoiGoc: "Bé chưa biết gì về cờ vua thì có học được không?",
+                tuKhoaChinh: "cờ vua, học cờ, mới bắt đầu",
+                tuKhoaMoRong: "cờ vua trẻ em, chơi cờ",
+                dieuKienKichHoat: "",
+                noiDungTraLoi: "Dạ, hoàn toàn phù hợp ạ! ♟️\n\nLớp Cờ vua tại SkillUp được thiết kế từ cơ bản đến nâng cao.\n\nCon sẽ được:\n✅ Rèn tư duy chiến lược, quan sát và dự đoán\n✅ Phát triển sự tập trung cao độ và kiên nhẫn\n✅ Học cách tôn trọng đối thủ, ứng xử đẹp khi thắng thua\n\nGiáo trình sinh động, kết hợp trò chơi giúp bé tiếp thu tự nhiên.",
+                ctaMacDinh: "SkillUp có buổi học thử MIỄN PHÍ. Ba Mẹ cho em xin thông tin để sắp xếp ạ.",
+                ctaThayThe: "",
+                monHocLienQuan: "Cờ Vua",
+                doTuoi: "Tất cả",
+                giaiDoanTuVan: "Tìm hiểu ban đầu",
+                uuTien: 20,
+                trangThai: "Đã duyệt",
+                nguoiTao: "admin@skillup.edu.vn",
+                ngayTao: new Date().toISOString(),
+                ghiChuNoiBo: ""
             }
         ];
 
-        // SHEET 2: MauChao_TuDong
-        const templateData = [
+        const sampleTemplateData = [
             {
-                stt: 1,
-                name: 'Chào ngắn',
-                trigger: 'Lần đầu nhắn tin (trong giờ hành chính)',
-                content: 'Chào anh/chị! SkillUp rất vui được chào đón anh/chị ạ! ❤️\n\nĐể em hỗ trợ anh/chị được nhanh và chính xác nhất, anh/chị vui lòng cho em biết mình quan tâm đến:\n✅ Thông tin môn học nào?\n✅ Bé nhà mình năm nay bao nhiêu tuổi ạ?\n\n*[Gợi ý lựa chọn nhanh: Giới thiệu chung | Thông tin môn học',
-                status: 'Đã duyệt'
+                id: 1,
+                name: "Chào ngắn (giờ hành chính)",
+                trigger: "Lần đầu nhắn tin trong giờ HC (8h-20h)",
+                content: "Dạ SkillUp xin chào ba/mẹ ạ! 😊\n\nĐể tư vấn chính xác hơn, ba/mẹ cho em xin:\n✅ Bé năm nay bao nhiêu tuổi\n✅ Đang quan tâm môn học nào ạ",
+                status: "Đã duyệt"
             },
             {
-                stt: 2,
-                name: 'Chào chi tiết',
-                trigger: 'Lần đầu nhắn tin (ngoài giờ) hoặc tin nhắn để qua đêm',
-                content: 'Kính chào anh/chị! Trung tâm đào tạo kỹ năng SkillUp xin gửi lời chào thân ái ạ! 🌟\n\nVới sứ mệnh "Ươm mầm phát triển, khơi nguồn sáng tạo, truyền cảm hứng học tập suốt đời", SkillUp tự hào là người bạn đồng hành đáng tin cậy cho sự phát triển toàn diện của trẻ từ 3-15 tuổi.\n\nHiện em đang ngoài giờ làm việc (8h-20h). Anh/chị vui lòng để lại thông tin cần hỗ trợ, em sẽ phản hồi sớm nhất vào sáng mai ạ!\n\nTrân trọng cảm ơn!',
-                status: 'Đã duyệt'
-            },
-            {
-                stt: 3,
-                name: 'Chào phản hồi lại',
-                trigger: 'Khi khách nhắn lại lần 2 (có lịch sử chat)',
-                content: 'Chào chị [Tên PH]! Rất vui được gặp lại chị và bé [Tên bé] ạ! 😊\n\nHôm nay chị cần hỗ trợ thêm thông tin gì cho bé không ạ? Em vẫn luôn sẵn sàng đồng hành cùng hai mẹ con!',
-                status: 'Đã duyệt'
+                id: 2,
+                name: "Chào ngoài giờ",
+                trigger: "Tin nhắn ngoài giờ (20h-8h)",
+                content: "SkillUp xin chào ba mẹ! 👋\n\n⏰ Hiện trung tâm đang ngoài giờ làm việc (8h–20h).\n\nBa mẹ vui lòng để lại thông tin, SkillUp sẽ phản hồi sớm nhất vào sáng mai ạ.\n\nTrân trọng! 🙏",
+                status: "Đã duyệt"
             }
         ];
 
-        // SHEET 3: TinhHuongDacBiet
-        const situationData = [
+        const sampleSituationData = [
             {
-                stt: 1,
-                type: 'Phàn nàn/lo lắng',
-                keywords: 'chán, không tiến bộ, kém, chậm, học mãi không khá, buồn',
-                content: 'Dạ, trước tiên SkillUp chân thành cảm ơn anh/chị đã tin tưởng chia sẻ điều này ạ. Chúng tôi rất trân trọng và luôn lắng nghe để đồng hành cùng ba mẹ.\n\nViệc học của trẻ là một hành trình dài, và mỗi bé có một tốc độ phát triển, cách tiếp thu riêng. Đôi khi sự tiến bộ không hiện ra ngay ở điểm số, mà ở sự tập trung hơn, hứng thú hơn, hay dám mạnh dạn thể hiện bản thân hơn.\n\nĐể hỗ trợ bé tốt nhất, mình có thể cùng nhau:\n1. Trao đổi trực tiếp với giáo viên đứng lớp để có đánh giá chi tiết nhất về quá trình và điểm cần cải thiện của con.\n2. SkillUp có thể sắp xếp một buổi trao đổi riêng giữa phụ huynh, giáo viên và quản lý đào tạo để cùng tìm ra phương hướng hỗ trợ cá nhân hóa cho bé.',
-                cta: 'Anh/chị có thể sắp xếp một buổi chiều thứ Bảy hoặc sáng Chủ nhật tuần này để chúng ta gặp nhau trực tiếp tại trung tâm, cùng lắng nghe và tháo gỡ khó khăn cho bé được không ạ?',
-                status: 'Đã duyệt'
+                id: 1,
+                type: "Phàn nàn/lo lắng",
+                keywords: "chán, không tiến bộ, kém, chậm",
+                content: "Dạ, SkillUp xin chân thành cảm ơn ba mẹ đã chia sẻ ạ 🌷\n\nTrung tâm rất trân trọng ý kiến và sẽ trao đổi với giáo viên để hỗ trợ bé tốt hơn.\n\nViệc học là hành trình dài, mỗi bé có tốc độ tiếp thu khác nhau.",
+                cta: "Ba mẹ có thể sắp xếp buổi gặp trực tiếp để cùng trao đổi được không ạ?",
+                status: "Đã duyệt"
             },
             {
-                stt: 2,
-                type: 'So sánh đối thủ',
-                keywords: 'hơn, kém, so với, khác biệt gì, tốt hơn, tốt nhất',
-                content: 'Dạ, SkillUp tin rằng mỗi trung tâm đều có những thế mạnh và triết lý giáo dục riêng đáng trân trọng ạ. 😊\n\nĐiều chúng tôi tập trung xây dựng và được nhiều phụ huynh ghi nhận là:\n- Triết lý "Học mà chơi, chơi mà học" cân bằng: Giúp con vững kiến thức nhưng không đánh mất sự sáng tạo và niềm vui.\n- Lộ trình cá nhân hóa sâu sát: Giáo viên theo sát từng bé, có nhật ký và phản hồi định kỳ.\n- Môi trường truyền cảm hứng: Từ không gian đến cách giao tiếp, đều hướng tới việc xây dựng sự tự tin, tò mò và tình yêu học tập lâu dài.\n- Đội ngũ tâm huyết như người thân: Yêu trẻ, kiên nhẫn và luôn tìm cách kết nối.\n\nChúng tôi luôn nỗ lực để là người bạn đồng hành đáng tin cậy nhất trên hành trình lớn khôn của con.',
-                cta: 'Điều quan trọng nhất là tìm được môi trường PHÙ HỢP với tính cách và mục tiêu của bé. Anh/chị có thể cho bé đến trải nghiệm thử 1 buổi MIỄN PHÍ để cảm nhận trực tiếp không ạ? Đó sẽ là câu trả lời thuyết phục và chân thực nhất.',
-                status: 'Đã duyệt'
-            },
-            {
-                stt: 3,
-                type: 'Hỏi thông tin chưa có',
-                keywords: 'khi nào có, bao giờ có, tương lai, sau này, có mở lớp',
-                content: 'Dạ, SkillUp rất cảm ơn câu hỏi rất chi tiết và tâm huyết của anh/chị ạ! 💖\n\nVới những thông tin chuyên sâu/chi tiết hoặc liên quan đến kế hoạch phát triển như vậy, để có câu trả lời chính xác và đầy đủ nhất, em sẽ chuyển ngay câu hỏi của anh/chị tới đội ngũ chuyên môn/Quản lý đào tạo.\n\nHọ sẽ liên hệ lại trực tiếp với anh/chị trong vòng 24 giờ làm việc tới để giải đáp tận tình và cung cấp thông tin cập nhật nhất ạ.',
-                cta: 'Trong lúc chờ đợi, anh/chị có cần em hỗ trợ thêm thông tin nào khác về các môn học hiện có của SkillUp không ạ?',
-                status: 'Đã duyệt'
-            },
-            {
-                stt: 4,
-                type: 'Yêu cầu gặp nhân viên',
-                keywords: 'gặp nhân viên, gặp tư vấn viên, muốn nói chuyện trực tiếp, gọi điện',
-                content: 'Dạ, SkillUp rất hoan nghênh việc anh/chị muốn trao đổi trực tiếp để được tư vấn kỹ càng và cảm nhận rõ hơn về môi trường ạ! 📞\n\nHiện tại, đội ngũ tư vấn viên của chúng tôi có thể hỗ trợ anh/chị qua điện thoại hoặc gặp mặt trực tiếp tại trung tâm.\n\nChúng tôi luôn sẵn sàng lắng nghe và đồng hành.',
-                cta: 'Để em sắp xếp lịch hẹn phù hợp và chuyên nghiệp nhất, anh/chị vui lòng cho em biết khung giờ nào thuận tiện nhất trong 2 ngày tới ạ? (Ví dụ: Sáng/Chiều/Tối, thứ mấy). Em sẽ báo lại lịch hẹn cụ thể ngay ạ.',
-                status: 'Đã duyệt'
-            },
-            {
-                stt: 5,
-                type: 'Nhắn cảm ơn sau tư vấn',
-                keywords: 'cảm ơn, tạm biệt, hẹn gặp lại',
-                content: 'Chào chị [Tên PH]!\n\nEm cảm ơn chị đã dành thời gian trao đổi và tin tưởng SkillUp ạ. Hy vọng những thông tin trên đã phần nào giải đáp được băn khoăn của chị.\n\nHành trình phát triển của bé luôn cần sự đồng hành từ gia đình và nhà trường. SkillUp luôn sẵn sàng là người bạn đồng hành đáng tin cậy.\n\nKhi nào chị cần hỗ trợ thêm hoặc quyết định đặt lịch cho bé trải nghiệm, chị cứ nhắn tin trực tiếp cho em nhé!\n\nChúc gia đình mình một ngày thật vui vẻ và ấm áp ạ! ❤️\n\nTrân trọng,\nĐội ngũ SkillUp Center.',
-                cta: '(Không cần CTA)',
-                status: 'Đã duyệt'
+                id: 2,
+                type: "So sánh đối thủ",
+                keywords: "so sánh, hơn kém, khác biệt, tốt hơn",
+                content: "Dạ, mỗi trung tâm đều có thế mạnh riêng ạ 😊\n\nĐiểm SkillUp được đánh giá cao:\n✅ Triết lý \"Học mà chơi\" cân bằng\n✅ Lộ trình cá nhân hóa sâu sát\n✅ Môi trường truyền cảm hứng\n✅ Đội ngũ tâm huyết",
+                cta: "Ba mẹ có thể cho bé trải nghiệm 1 buổi MIỄN PHÍ để cảm nhận trực tiếp không ạ?",
+                status: "Đã duyệt"
             }
         ];
 
-        // ==================== HÀM XỬ LÝ ====================
+        // ==================== INITIALIZATION ====================
+        function init() {
+            loadTheme();
+            checkSession();
+            loadDataFromStorage();
+            setupKeyboardShortcuts();
+        }
 
+        function checkSession() {
+            const session = localStorage.getItem(CONFIG.STORAGE_KEYS.SESSION);
+            if (session) {
+                const data = JSON.parse(session);
+                if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
+                    currentUser = data;
+                    showMainApp();
+                    return;
+                }
+            }
+            document.getElementById('loginOverlay').classList.remove('hidden');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const user = CONFIG.USERS[username];
+
+            if (user && user.password === password) {
+                currentUser = { username, role: user.role, name: user.name, timestamp: Date.now() };
+                localStorage.setItem(CONFIG.STORAGE_KEYS.SESSION, JSON.stringify(currentUser));
+                showMainApp();
+            } else {
+                document.getElementById('loginError').classList.add('show');
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('currentUser').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role === 'admin' ? 'Admin' : 'User';
+            
+            initApp();
+        }
+
+        function logout() {
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.SESSION);
+            location.reload();
+        }
+
+        function initApp() {
+            initFilters();
+            displayFAQ(faqDatabase);
+            displayTemplates(templateDatabase);
+            displaySituations(situationDatabase);
+            updateStats();
+            updateDataTable();
+            updateAutosave();
+            loadBackupHistory();
+
+            document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') searchFAQ(); });
+            document.getElementById('templateSearch').addEventListener('keypress', e => { if (e.key === 'Enter') searchTemplates(); });
+            document.getElementById('situationSearch').addEventListener('keypress', e => { if (e.key === 'Enter') searchSituations(); });
+        }
+
+        function loadDataFromStorage() {
+            faqDatabase = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.FAQ)) || sampleFAQData;
+            templateDatabase = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TEMPLATES)) || sampleTemplateData;
+            situationDatabase = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SITUATIONS)) || sampleSituationData;
+            backupHistory = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.BACKUPS)) || [];
+        }
+
+        function saveDataToStorage() {
+            localStorage.setItem(CONFIG.STORAGE_KEYS.FAQ, JSON.stringify(faqDatabase));
+            localStorage.setItem(CONFIG.STORAGE_KEYS.TEMPLATES, JSON.stringify(templateDatabase));
+            localStorage.setItem(CONFIG.STORAGE_KEYS.SITUATIONS, JSON.stringify(situationDatabase));
+        }
+
+        // ==================== THEME ====================
+        function loadTheme() {
+            const theme = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeIcon').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, newTheme);
+            document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key.toLowerCase()) {
+                        case 'k':
+                            e.preventDefault();
+                            document.getElementById('searchInput')?.focus();
+                            switchTab({preventDefault:()=>{}, target: document.querySelector('[data-tab="search"]')}, 'search');
+                            break;
+                        case 'n':
+                            e.preventDefault();
+                            switchTab({preventDefault:()=>{}, target: document.querySelector('[data-tab="form"]')}, 'form');
+                            break;
+                        case 's':
+                            if (document.getElementById('form').classList.contains('active')) {
+                                e.preventDefault();
+                                document.getElementById('faqForm').dispatchEvent(new Event('submit'));
+                            }
+                            break;
+                        case 'd':
+                            e.preventDefault();
+                            toggleTheme();
+                            break;
+                        case 'e':
+                            e.preventDefault();
+                            exportToExcel();
+                            break;
+                        case '/':
+                            e.preventDefault();
+                            document.getElementById('shortcutsPanel').classList.toggle('show');
+                            break;
+                    }
+                }
+            });
+        }
+
+        // ==================== TAB SWITCHING ====================
         function switchTab(event, tabName) {
             event.preventDefault();
-            
-            // Ẩn tất cả tab content
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            // Xóa active từ tất cả button
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Hiển thị tab được chọn
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
-
-            // Khởi tạo nội dung tab
-            if (tabName === 'faq') {
-                initFAQ();
-            } else if (tabName === 'templates') {
-                initTemplate();
-            } else if (tabName === 'situations') {
-                initSituation();
-            }
+            
+            if (tabName === 'manage') updateDataTable();
+            if (tabName === 'backup') loadBackupHistory();
         }
 
-        // ==================== TAB 1: FAQ ====================
-
-        function initFAQ() {
-            // Kiểm tra nếu đã khởi tạo
-            if (document.getElementById('faqFilterOptions').innerHTML) return;
-            
-            const groups = [...new Set(faqData.map(f => f.group))];
-            const filterOpts = document.getElementById('faqFilterOptions');
-            
-            let html = '<button class="filter-btn active" onclick="filterFAQ(event, \'all\')">🏷️ Tất Cả</button>';
-            groups.forEach(group => {
-                html += `<button class="filter-btn" onclick="filterFAQ(event, '${group}')">📂 ${group}</button>`;
+        // ==================== SEARCH & FILTER ====================
+        function initFilters() {
+            const groups = [...new Set(faqDatabase.filter(f => f.loaiCauHoi === 'FAQ').map(f => f.nhomFAQ))];
+            let html = '<button class="filter-btn active" onclick="filterByGroup(event, \'all\')">🏷️ Tất Cả</button>';
+            groups.forEach(g => {
+                if (g && g !== '-') html += `<button class="filter-btn" onclick="filterByGroup(event, '${g}')">${g}</button>`;
             });
-            filterOpts.innerHTML = html;
-            
-            displayFAQ(faqData);
-            document.getElementById('totalFAQ').textContent = faqData.length;
+            document.getElementById('filterOptions').innerHTML = html;
         }
 
-        function displayFAQ(data) {
-            const resultsDiv = document.getElementById('faqResults');
-            resultsDiv.innerHTML = '';
-
-            if (data.length === 0) {
-                resultsDiv.innerHTML = '<div class="no-results">😕 Không tìm thấy câu hỏi phù hợp</div>';
-                document.getElementById('displayFAQ').textContent = '0';
-                return;
+        // Fuzzy search implementation
+        function fuzzyMatch(text, pattern) {
+            if (!text || !pattern) return false;
+            text = text.toLowerCase();
+            pattern = pattern.toLowerCase();
+            
+            if (text.includes(pattern)) return true;
+            
+            let patternIdx = 0;
+            for (let i = 0; i < text.length && patternIdx < pattern.length; i++) {
+                if (text[i] === pattern[patternIdx]) patternIdx++;
             }
-
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'faq-card';
-                card.innerHTML = `
-                    <span class="faq-tag">📂 ${item.group}</span>
-                    <h3>${item.title}</h3>
-                    <p class="question-text"><strong>❓ Câu hỏi:</strong> ${item.question}</p>
-                    ${item.variations ? `<p class="question-text"><strong>🔄 Biến thể:</strong> ${item.variations}</p>` : ''}
-                    
-                    <div class="answer-section">
-                        <div class="answer-title">✅ Trả lời:</div>
-                        <div class="answer-content">${item.answer}</div>
-                        <div class="cta-box">
-                            <strong>💬 Hành động tiếp theo:</strong><br>
-                            ${item.cta}
-                        </div>
-                    </div>
-
-                    <div class="meta-info">
-                        <span class="meta-item">👤 ${item.updatedBy}</span>
-                        <span class="meta-item">📅 ${item.updatedDate}</span>
-                        <span class="meta-item">✓ ${item.status}</span>
-                    </div>
-
-                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.answer)}')">📋 Sao chép câu trả lời</button>
-                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.cta)}')">📋 Sao chép CTA</button>
-                `;
-                resultsDiv.appendChild(card);
-            });
-
-            document.getElementById('displayFAQ').textContent = data.length;
+            return patternIdx === pattern.length;
         }
 
         function searchFAQ() {
-            const keyword = document.getElementById('faqSearch').value.toLowerCase();
-            
-            if (!keyword) {
-                displayFAQ(faqData);
-                return;
-            }
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (!keyword) { displayFAQ(faqDatabase); return; }
 
-            const filtered = faqData.filter(item =>
-                item.title.toLowerCase().includes(keyword) ||
-                item.question.toLowerCase().includes(keyword) ||
-                item.variations.toLowerCase().includes(keyword) ||
-                item.answer.toLowerCase().includes(keyword) ||
-                item.group.toLowerCase().includes(keyword) ||
-                item.cta.toLowerCase().includes(keyword)
+            const filtered = faqDatabase.filter(item =>
+                fuzzyMatch(item.tieuDe, keyword) ||
+                fuzzyMatch(item.cauHoiGoc, keyword) ||
+                fuzzyMatch(item.tuKhoaChinh, keyword) ||
+                fuzzyMatch(item.tuKhoaMoRong, keyword) ||
+                fuzzyMatch(item.noiDungTraLoi, keyword) ||
+                fuzzyMatch(item.nhomFAQ, keyword)
             );
-            
             displayFAQ(filtered);
         }
 
-        function filterFAQ(event, group) {
+        function filterByGroup(event, group) {
             event.preventDefault();
-            
-            document.querySelectorAll('#faqFilterOptions .filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('#filterOptions .filter-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-
-            // Xóa text tìm kiếm
-            document.getElementById('faqSearch').value = '';
-
-            if (group === 'all') {
-                displayFAQ(faqData);
-            } else {
-                const filtered = faqData.filter(item => item.group === group);
-                displayFAQ(filtered);
-            }
+            document.getElementById('searchInput').value = '';
+            
+            if (group === 'all') displayFAQ(faqDatabase);
+            else displayFAQ(faqDatabase.filter(f => f.nhomFAQ === group));
         }
 
-        function clearFAQSearch() {
-            document.getElementById('faqSearch').value = '';
-            document.querySelectorAll('#faqFilterOptions .filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector('#faqFilterOptions .filter-btn').classList.add('active');
-            displayFAQ(faqData);
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('#filterOptions .filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('#filterOptions .filter-btn').classList.add('active');
+            displayFAQ(faqDatabase);
         }
 
-        // ==================== TAB 2: TEMPLATES ====================
-
-        function initTemplate() {
-            displayTemplate(templateData);
-            document.getElementById('totalTemplate').textContent = templateData.length;
-        }
-
-        function displayTemplate(data) {
-            const resultsDiv = document.getElementById('templateResults');
-            resultsDiv.innerHTML = '';
-
+        // ==================== DISPLAY FUNCTIONS ====================
+        function displayFAQ(data) {
+            const container = document.getElementById('searchResults');
             if (data.length === 0) {
-                resultsDiv.innerHTML = '<div class="no-results">😕 Không tìm thấy mẫu phù hợp</div>';
-                document.getElementById('displayTemplate').textContent = '0';
+                container.innerHTML = '<div class="no-results">😕 Không tìm thấy kết quả</div>';
+                document.getElementById('displayFAQStat').textContent = '0';
                 return;
             }
 
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'faq-card';
-                card.innerHTML = `
-                    <h3>💬 ${item.name}</h3>
-                    <p><strong>⚡ Kích hoạt khi:</strong> ${item.trigger}</p>
-                    
+            data.sort((a, b) => a.uuTien - b.uuTien);
+            container.innerHTML = data.map(item => `
+                <div class="faq-card">
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-outline" onclick="duplicateFAQ(${item.id})" title="Tạo bản sao">📋</button>
+                        <button class="btn btn-sm btn-warning" onclick="editFAQ(${item.id})" title="Chỉnh sửa">✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteFAQ(${item.id})" title="Xóa">🗑️</button>
+                    </div>
+                    <span class="faq-tag type">${item.loaiCauHoi}</span>
+                    ${item.nhomFAQ && item.nhomFAQ !== '-' ? `<span class="faq-tag">${item.nhomFAQ}</span>` : ''}
+                    ${item.uuTien <= 15 ? `<span class="faq-tag priority-high">⚡ ${item.uuTien}</span>` : ''}
+                    <h3>${escapeHtml(item.tieuDe)}</h3>
+                    ${item.cauHoiGoc ? `<p class="question-text">❓ ${escapeHtml(item.cauHoiGoc)}</p>` : ''}
                     <div class="answer-section">
-                        <div class="answer-title">📝 Nội dung mẫu:</div>
-                        <div class="answer-content">${item.content}</div>
+                        <div class="answer-title">✅ Trả lời:</div>
+                        <div class="answer-content">${escapeHtml(item.noiDungTraLoi)}</div>
+                        ${item.ctaMacDinh ? `<div class="cta-box">💬 ${escapeHtml(item.ctaMacDinh)}</div>` : ''}
                     </div>
-
                     <div class="meta-info">
-                        <span class="meta-item">✓ ${item.status}</span>
+                        <span>🆔 ${item.maCauHoi}</span>
+                        <span>✓ ${item.trangThai}</span>
                     </div>
+                    <button class="copy-btn" onclick="copyText(this, \`${escapeCopy(item.noiDungTraLoi)}\`)">📋 Sao chép trả lời</button>
+                    ${item.ctaMacDinh ? `<button class="copy-btn" onclick="copyText(this, \`${escapeCopy(item.ctaMacDinh)}\`)">📋 Sao chép CTA</button>` : ''}
+                    <button class="copy-btn" style="background:var(--success)" onclick="copyFull(${item.id})">📋 Sao chép đầy đủ</button>
+                </div>
+            `).join('');
 
-                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.content)}')">📋 Sao chép mẫu</button>
-                `;
-                resultsDiv.appendChild(card);
-            });
-
-            document.getElementById('displayTemplate').textContent = data.length;
+            document.getElementById('displayFAQStat').textContent = data.length;
         }
 
-        function searchTemplate() {
-            const keyword = document.getElementById('templateSearch').value.toLowerCase();
-            if (!keyword) {
-                displayTemplate(templateData);
-                return;
-            }
+        function displayTemplates(data) {
+            document.getElementById('templateResults').innerHTML = data.map(item => `
+                <div class="faq-card">
+                    <span class="faq-tag type">💬 Mẫu chào</span>
+                    <h3>${item.name}</h3>
+                    <p class="question-text">⚡ ${item.trigger}</p>
+                    <div class="answer-section">
+                        <div class="answer-content">${escapeHtml(item.content)}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText(this, \`${escapeCopy(item.content)}\`)">📋 Sao chép</button>
+                </div>
+            `).join('') || '<div class="no-results">Không có mẫu tin nhắn</div>';
+        }
 
-            const filtered = templateData.filter(item =>
-                item.name.toLowerCase().includes(keyword) ||
-                item.trigger.toLowerCase().includes(keyword) ||
-                item.content.toLowerCase().includes(keyword)
-            );
-            displayTemplate(filtered);
+        function displaySituations(data) {
+            document.getElementById('situationResults').innerHTML = data.map(item => `
+                <div class="faq-card">
+                    <span class="faq-tag type">⚡ ${item.type}</span>
+                    <h3>🎯 ${item.type}</h3>
+                    <p class="question-text">🔑 ${item.keywords}</p>
+                    <div class="answer-section">
+                        <div class="answer-content">${escapeHtml(item.content)}</div>
+                        ${item.cta && item.cta !== '-' ? `<div class="cta-box">💬 ${escapeHtml(item.cta)}</div>` : ''}
+                    </div>
+                    <button class="copy-btn" onclick="copyText(this, \`${escapeCopy(item.content)}\`)">📋 Sao chép</button>
+                </div>
+            `).join('') || '<div class="no-results">Không có tình huống</div>';
+        }
+
+        function searchTemplates() {
+            const k = document.getElementById('templateSearch').value.toLowerCase();
+            displayTemplates(k ? templateDatabase.filter(t => 
+                t.name.toLowerCase().includes(k) || t.content.toLowerCase().includes(k)
+            ) : templateDatabase);
         }
 
         function clearTemplateSearch() {
             document.getElementById('templateSearch').value = '';
-            displayTemplate(templateData);
+            displayTemplates(templateDatabase);
         }
 
-        // ==================== TAB 3: SITUATIONS ====================
-
-        function initSituation() {
-            displaySituation(situationData);
-            document.getElementById('totalSituation').textContent = situationData.length;
-        }
-
-        function displaySituation(data) {
-            const resultsDiv = document.getElementById('situationResults');
-            resultsDiv.innerHTML = '';
-
-            if (data.length === 0) {
-                resultsDiv.innerHTML = '<div class="no-results">😕 Không tìm thấy tình huống phù hợp</div>';
-                document.getElementById('displaySituation').textContent = '0';
-                return;
-            }
-
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'faq-card';
-                card.innerHTML = `
-                    <span class="faq-tag">⚡ ${item.type}</span>
-                    <h3>🎯 Tình huống ${item.stt}: ${item.type}</h3>
-                    <p><strong>🔑 Từ khóa phát hiện:</strong> ${item.keywords}</p>
-                    
-                    <div class="answer-section">
-                        <div class="answer-title">✅ Nội dung trả lời:</div>
-                        <div class="answer-content">${item.content}</div>
-                        ${item.cta !== '(Không cần CTA)' ? `
-                        <div class="cta-box">
-                            <strong>💬 Hành động tiếp theo:</strong><br>
-                            ${item.cta}
-                        </div>
-                        ` : ''}
-                    </div>
-
-                    <div class="meta-info">
-                        <span class="meta-item">✓ ${item.status}</span>
-                    </div>
-
-                    <button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.content)}')">📋 Sao chép nội dung</button>
-                    ${item.cta !== '(Không cần CTA)' ? `<button class="copy-btn" onclick="copyToClipboard(this, '${escapeTxt(item.cta)}')">📋 Sao chép CTA</button>` : ''}
-                `;
-                resultsDiv.appendChild(card);
-            });
-
-            document.getElementById('displaySituation').textContent = data.length;
-        }
-
-        function searchSituation() {
-            const keyword = document.getElementById('situationSearch').value.toLowerCase();
-            if (!keyword) {
-                displaySituation(situationData);
-                return;
-            }
-
-            const filtered = situationData.filter(item =>
-                item.type.toLowerCase().includes(keyword) ||
-                item.keywords.toLowerCase().includes(keyword) ||
-                item.content.toLowerCase().includes(keyword) ||
-                item.cta.toLowerCase().includes(keyword)
-            );
-            displaySituation(filtered);
+        function searchSituations() {
+            const k = document.getElementById('situationSearch').value.toLowerCase();
+            displaySituations(k ? situationDatabase.filter(s => 
+                s.type.toLowerCase().includes(k) || s.keywords.toLowerCase().includes(k) || s.content.toLowerCase().includes(k)
+            ) : situationDatabase);
         }
 
         function clearSituationSearch() {
             document.getElementById('situationSearch').value = '';
-            displaySituation(situationData);
+            displaySituations(situationDatabase);
         }
 
-        // ==================== UTILITY ====================
+        // ==================== FORM HANDLING ====================
+        function handleTypeChange() {
+            const type = document.getElementById('loaiCauHoi').value;
+            document.getElementById('dieuKienGroup').style.display = type === 'Chao_TuDong' ? 'block' : 'none';
+        }
 
-        function copyToClipboard(button, text) {
-            const actualText = text.replace(/\\\//g, '/').replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/\\n/g, '\n');
+        function submitForm(event) {
+            event.preventDefault();
+            const formData = getFormData();
             
-            navigator.clipboard.writeText(actualText).then(() => {
-                const originalText = button.textContent;
-                button.textContent = '✅ Đã sao chép!';
-                button.classList.add('copied');
+            if (currentEditId) {
+                const idx = faqDatabase.findIndex(f => f.id === currentEditId);
+                if (idx !== -1) {
+                    formData.id = currentEditId;
+                    formData.maCauHoi = faqDatabase[idx].maCauHoi;
+                    faqDatabase[idx] = {...faqDatabase[idx], ...formData};
+                    showToast('✅ Cập nhật thành công!', 'success');
+                }
+                currentEditId = null;
+            } else {
+                formData.id = generateId();
+                formData.maCauHoi = generateCode(formData.loaiCauHoi, formData.nhomFAQ);
+                formData.ngayTao = new Date().toISOString();
+                faqDatabase.push(formData);
+                showToast('✅ Thêm FAQ thành công!', 'success');
+            }
+            
+            saveDataToStorage();
+            updateStats();
+            initFilters();
+            displayFAQ(faqDatabase);
+            updateDataTable();
+            clearForm();
+        }
 
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.classList.remove('copied');
-                }, 1500);
-            }).catch(err => {
-                console.error('Lỗi sao chép:', err);
-                alert('Không thể sao chép. Vui lòng thử lại!');
+        function getFormData() {
+            const checkboxes = document.querySelectorAll('input[name="monHoc"]:checked');
+            return {
+                loaiCauHoi: document.getElementById('loaiCauHoi').value,
+                nhomFAQ: document.getElementById('nhomFAQ').value || '-',
+                phanNhomCon: document.getElementById('phanNhomCon').value,
+                tieuDe: document.getElementById('tieuDe').value,
+                cauHoiGoc: document.getElementById('cauHoiGoc').value,
+                tuKhoaChinh: document.getElementById('tuKhoaChinh').value,
+                tuKhoaMoRong: document.getElementById('tuKhoaMoRong').value,
+                dieuKienKichHoat: document.getElementById('dieuKienKichHoat').value,
+                noiDungTraLoi: document.getElementById('noiDungTraLoi').value,
+                ctaMacDinh: document.getElementById('ctaMacDinh').value,
+                ctaThayThe: document.getElementById('ctaThayThe').value,
+                monHocLienQuan: Array.from(checkboxes).map(c => c.value).join(', ') || 'Tất Cả',
+                doTuoi: document.getElementById('doTuoi').value,
+                giaiDoanTuVan: document.getElementById('giaiDoanTuVan').value,
+                uuTien: parseInt(document.getElementById('uuTien').value) || 50,
+                trangThai: document.getElementById('trangThai').value,
+                nguoiTao: document.getElementById('emailNguoiTao').value,
+                ghiChuNoiBo: document.getElementById('ghiChuNoiBo').value
+            };
+        }
+
+        function clearForm() {
+            document.getElementById('faqForm').reset();
+            document.getElementById('uuTien').value = 50;
+            currentEditId = null;
+        }
+
+        function saveDraft() {
+            localStorage.setItem(CONFIG.STORAGE_KEYS.DRAFT, JSON.stringify(getFormData()));
+            showToast('📝 Đã lưu bản nháp!', 'success');
+            document.getElementById('lastSaveTime').textContent = `Lưu: ${new Date().toLocaleTimeString('vi-VN')}`;
+        }
+
+        function loadDraft() {
+            const draft = localStorage.getItem(CONFIG.STORAGE_KEYS.DRAFT);
+            if (draft) {
+                populateForm(JSON.parse(draft));
+                showToast('📂 Đã tải bản nháp!', 'success');
+            } else {
+                showToast('❌ Không có bản nháp!', 'error');
+            }
+        }
+
+        function populateForm(data) {
+            Object.keys(data).forEach(key => {
+                const el = document.getElementById(key.charAt(0).toLowerCase() + key.slice(1).replace(/([A-Z])/g, c => c));
+                if (el) el.value = data[key] || '';
+            });
+            document.getElementById('loaiCauHoi').value = data.loaiCauHoi || '';
+            document.getElementById('nhomFAQ').value = data.nhomFAQ || '';
+            document.getElementById('tieuDe').value = data.tieuDe || '';
+            document.getElementById('cauHoiGoc').value = data.cauHoiGoc || '';
+            document.getElementById('tuKhoaChinh').value = data.tuKhoaChinh || '';
+            document.getElementById('tuKhoaMoRong').value = data.tuKhoaMoRong || '';
+            document.getElementById('noiDungTraLoi').value = data.noiDungTraLoi || '';
+            document.getElementById('ctaMacDinh').value = data.ctaMacDinh || '';
+            document.getElementById('uuTien').value = data.uuTien || 50;
+            document.getElementById('trangThai').value = data.trangThai || 'Chờ duyệt';
+            document.getElementById('emailNguoiTao').value = data.nguoiTao || '';
+            handleTypeChange();
+        }
+
+        function previewFAQ() {
+            const data = getFormData();
+            document.getElementById('previewContent').innerHTML = `
+                <div class="faq-card" style="box-shadow:none;">
+                    <span class="faq-tag type">${data.loaiCauHoi}</span>
+                    <span class="faq-tag">${data.nhomFAQ}</span>
+                    <h3>${escapeHtml(data.tieuDe || '(Chưa có tiêu đề)')}</h3>
+                    <div class="answer-section">
+                        <div class="answer-content">${escapeHtml(data.noiDungTraLoi || '(Chưa có nội dung)')}</div>
+                        ${data.ctaMacDinh ? `<div class="cta-box">${escapeHtml(data.ctaMacDinh)}</div>` : ''}
+                    </div>
+                </div>
+            `;
+            openModal('previewModal');
+        }
+
+        // ==================== CRUD OPERATIONS ====================
+        function editFAQ(id) {
+            const faq = faqDatabase.find(f => f.id === id);
+            if (faq) {
+                currentEditId = id;
+                populateForm(faq);
+                switchTab({preventDefault:()=>{}, target: document.querySelector('[data-tab="form"]')}, 'form');
+                showToast('📝 Đang chỉnh sửa #' + id, 'success');
+            }
+        }
+
+        function duplicateFAQ(id) {
+            const faq = faqDatabase.find(f => f.id === id);
+            if (faq) {
+                const newFaq = {...faq, id: generateId(), maCauHoi: generateCode(faq.loaiCauHoi, faq.nhomFAQ), tieuDe: faq.tieuDe + ' (Bản sao)', ngayTao: new Date().toISOString()};
+                faqDatabase.push(newFaq);
+                saveDataToStorage();
+                updateStats();
+                displayFAQ(faqDatabase);
+                updateDataTable();
+                showToast('📋 Đã tạo bản sao!', 'success');
+            }
+        }
+
+        function deleteFAQ(id) {
+            if (confirm('Bạn có chắc muốn xóa FAQ này?')) {
+                faqDatabase = faqDatabase.filter(f => f.id !== id);
+                saveDataToStorage();
+                updateStats();
+                displayFAQ(faqDatabase);
+                updateDataTable();
+                showToast('🗑️ Đã xóa!', 'success');
+            }
+        }
+
+        // ==================== AUTOSAVE ====================
+        function updateAutosave() {
+            const interval = parseInt(document.getElementById('autosaveInterval').value);
+            const status = document.getElementById('autosaveStatus');
+            
+            if (autosaveTimer) clearInterval(autosaveTimer);
+            
+            if (interval > 0) {
+                autosaveTimer = setInterval(saveDraft, interval * 1000);
+                status.className = 'autosave-status active';
+                status.innerHTML = '<span class="status-dot active"></span><span>Mỗi ' + interval + 's</span>';
+            } else {
+                status.className = 'autosave-status inactive';
+                status.innerHTML = '<span class="status-dot inactive"></span><span>Tắt</span>';
+            }
+        }
+
+        // ==================== EXPORT/IMPORT ====================
+        function exportToExcel() {
+            const data = faqDatabase.map(f => ({
+                'ID': f.id,
+                'Mã Câu Hỏi': f.maCauHoi,
+                'Loại Câu Hỏi': f.loaiCauHoi,
+                'Nhóm FAQ': f.nhomFAQ,
+                'Phân Nhóm Con': f.phanNhomCon,
+                'Tiêu Đề': f.tieuDe,
+                'Câu Hỏi Gốc': f.cauHoiGoc,
+                'Từ Khóa Chính': f.tuKhoaChinh,
+                'Từ Khóa Mở Rộng': f.tuKhoaMoRong,
+                'Điều Kiện Kích Hoạt': f.dieuKienKichHoat,
+                'Nội Dung Trả Lời': f.noiDungTraLoi,
+                'CTA Mặc Định': f.ctaMacDinh,
+                'CTA Thay Thế': f.ctaThayThe,
+                'Môn Học Liên Quan': f.monHocLienQuan,
+                'Độ Tuổi': f.doTuoi,
+                'Giai Đoạn Tư Vấn': f.giaiDoanTuVan,
+                'Ưu Tiên': f.uuTien,
+                'Trạng Thái': f.trangThai,
+                'Người Tạo': f.nguoiTao,
+                'Ngày Tạo': f.ngayTao,
+                'Ghi Chú Nội Bộ': f.ghiChuNoiBo
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'FAQ_Database');
+            XLSX.writeFile(wb, `SkillUp_FAQ_${formatDate(new Date())}.xlsx`);
+            showToast('📊 Đã xuất Excel!', 'success');
+        }
+
+        function exportToCSV() {
+            const headers = ['ID','Mã','Loại','Nhóm','Tiêu Đề','Nội Dung','CTA','Trạng Thái','Ưu Tiên'];
+            const rows = faqDatabase.map(f => [f.id, f.maCauHoi, f.loaiCauHoi, f.nhomFAQ, `"${f.tieuDe}"`, `"${f.noiDungTraLoi?.replace(/"/g,'""')}"`, `"${f.ctaMacDinh?.replace(/"/g,'""')}"`, f.trangThai, f.uuTien]);
+            const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            downloadFile(csv, `SkillUp_FAQ_${formatDate(new Date())}.csv`, 'text/csv');
+            showToast('📄 Đã xuất CSV!', 'success');
+        }
+
+        function showImportModal() {
+            openModal('importModal');
+        }
+
+        function processImport() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) { showToast('❌ Chưa chọn file!', 'error'); return; }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let data;
+                    if (file.name.endsWith('.json')) {
+                        data = JSON.parse(e.target.result);
+                        if (data.faq) faqDatabase = [...faqDatabase, ...data.faq];
+                        else if (Array.isArray(data)) faqDatabase = [...faqDatabase, ...data];
+                    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.csv')) {
+                        const wb = XLSX.read(e.target.result, {type: 'binary'});
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        data = XLSX.utils.sheet_to_json(ws);
+                        data.forEach(row => {
+                            faqDatabase.push({
+                                id: row['ID'] || generateId(),
+                                maCauHoi: row['Mã Câu Hỏi'] || row['Mã'] || generateCode('FAQ', 'Giới thiệu'),
+                                loaiCauHoi: row['Loại Câu Hỏi'] || row['Loại'] || 'FAQ',
+                                nhomFAQ: row['Nhóm FAQ'] || row['Nhóm'] || 'Giới thiệu',
+                                phanNhomCon: row['Phân Nhóm Con'] || '',
+                                tieuDe: row['Tiêu Đề'] || '',
+                                cauHoiGoc: row['Câu Hỏi Gốc'] || '',
+                                tuKhoaChinh: row['Từ Khóa Chính'] || '',
+                                tuKhoaMoRong: row['Từ Khóa Mở Rộng'] || '',
+                                dieuKienKichHoat: row['Điều Kiện Kích Hoạt'] || '',
+                                noiDungTraLoi: row['Nội Dung Trả Lời'] || row['Nội Dung'] || '',
+                                ctaMacDinh: row['CTA Mặc Định'] || row['CTA'] || '',
+                                ctaThayThe: row['CTA Thay Thế'] || '',
+                                monHocLienQuan: row['Môn Học Liên Quan'] || 'Tất Cả',
+                                doTuoi: row['Độ Tuổi'] || 'Tất cả',
+                                giaiDoanTuVan: row['Giai Đoạn Tư Vấn'] || 'Tất cả',
+                                uuTien: row['Ưu Tiên'] || 50,
+                                trangThai: row['Trạng Thái'] || 'Chờ duyệt',
+                                nguoiTao: row['Người Tạo'] || currentUser?.name || '',
+                                ngayTao: row['Ngày Tạo'] || new Date().toISOString(),
+                                ghiChuNoiBo: row['Ghi Chú Nội Bộ'] || ''
+                            });
+                        });
+                    }
+                    saveDataToStorage();
+                    updateStats();
+                    initFilters();
+                    displayFAQ(faqDatabase);
+                    updateDataTable();
+                    closeModal('importModal');
+                    showToast('📥 Nhập thành công!', 'success');
+                } catch(err) {
+                    showToast('❌ Lỗi: ' + err.message, 'error');
+                }
+            };
+            
+            if (file.name.endsWith('.json')) reader.readAsText(file);
+            else reader.readAsBinaryString(file);
+        }
+
+        // ==================== BACKUP ====================
+        function createBackup() {
+            const backup = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                faq: faqDatabase,
+                templates: templateDatabase,
+                situations: situationDatabase
+            };
+            
+            backupHistory.unshift({id: backup.id, date: backup.date, count: faqDatabase.length});
+            if (backupHistory.length > 10) backupHistory = backupHistory.slice(0, 10);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.BACKUPS, JSON.stringify(backupHistory));
+            
+            downloadFile(JSON.stringify(backup, null, 2), `SkillUp_Backup_${formatDate(new Date())}.json`, 'application/json');
+            loadBackupHistory();
+            showToast('💾 Backup đã tạo và tải về!', 'success');
+        }
+
+        function downloadLatestBackup() {
+            createBackup();
+        }
+
+        function loadBackupHistory() {
+            const list = document.getElementById('backupList');
+            if (backupHistory.length === 0) {
+                list.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:20px;">Chưa có backup</p>';
+                return;
+            }
+            list.innerHTML = backupHistory.map(b => `
+                <div class="backup-item">
+                    <span>📁 ${new Date(b.date).toLocaleString('vi-VN')} (${b.count} FAQ)</span>
+                    <button class="btn btn-sm btn-outline" onclick="createBackup()">⬇️ Tải lại</button>
+                </div>
+            `).join('');
+        }
+
+        function showRestoreModal() {
+            openModal('restoreModal');
+        }
+
+        function processRestore() {
+            const file = document.getElementById('restoreFile').files[0];
+            if (!file) { showToast('❌ Chưa chọn file!', 'error'); return; }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.faq) faqDatabase = data.faq;
+                    if (data.templates) templateDatabase = data.templates;
+                    if (data.situations) situationDatabase = data.situations;
+                    saveDataToStorage();
+                    updateStats();
+                    initFilters();
+                    displayFAQ(faqDatabase);
+                    displayTemplates(templateDatabase);
+                    displaySituations(situationDatabase);
+                    updateDataTable();
+                    closeModal('restoreModal');
+                    showToast('🔄 Khôi phục thành công!', 'success');
+                } catch(err) {
+                    showToast('❌ Lỗi: File không hợp lệ!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function updateAutoBackup() {
+            const interval = parseInt(document.getElementById('autoBackupInterval').value);
+            if (autoBackupTimer) clearInterval(autoBackupTimer);
+            if (interval > 0) {
+                autoBackupTimer = setInterval(createBackup, interval * 1000);
+            }
+        }
+
+        // ==================== DATA TABLE ====================
+        function updateDataTable() {
+            const approved = faqDatabase.filter(f => f.trangThai === 'Đã duyệt').length;
+            const pending = faqDatabase.filter(f => f.trangThai === 'Chờ duyệt').length;
+            document.getElementById('manageStats').innerHTML = `Tổng: <strong>${faqDatabase.length}</strong> | Đã duyệt: <strong>${approved}</strong> | Chờ duyệt: <strong>${pending}</strong>`;
+            
+            document.getElementById('dataTableBody').innerHTML = faqDatabase.map(f => `
+                <tr>
+                    <td>${f.id}</td>
+                    <td><code>${f.maCauHoi}</code></td>
+                    <td>${f.loaiCauHoi}</td>
+                    <td>${f.nhomFAQ}</td>
+                    <td>${escapeHtml(f.tieuDe?.substring(0, 35))}${f.tieuDe?.length > 35 ? '...' : ''}</td>
+                    <td><span class="faq-tag ${f.trangThai === 'Đã duyệt' ? 'type' : ''}">${f.trangThai}</span></td>
+                    <td>${f.uuTien}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="duplicateFAQ(${f.id})">📋</button>
+                        <button class="btn btn-sm btn-warning" onclick="editFAQ(${f.id})">✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteFAQ(${f.id})">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalFAQStat').textContent = faqDatabase.length;
+            document.getElementById('displayFAQStat').textContent = faqDatabase.length;
+            document.getElementById('approvedStat').textContent = faqDatabase.filter(f => f.trangThai === 'Đã duyệt').length;
+            document.getElementById('pendingStat').textContent = faqDatabase.filter(f => f.trangThai === 'Chờ duyệt').length;
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ XÓA TẤT CẢ? Hành động này không thể hoàn tác!')) {
+                faqDatabase = [];
+                saveDataToStorage();
+                updateStats();
+                updateDataTable();
+                initFilters();
+                displayFAQ([]);
+                showToast('🗑️ Đã xóa tất cả!', 'success');
+            }
+        }
+
+        // ==================== UTILITIES ====================
+        function generateId() {
+            return faqDatabase.length > 0 ? Math.max(...faqDatabase.map(f => f.id)) + 1 : 1001;
+        }
+
+        function generateCode(type, group) {
+            const prefixes = {'FAQ': 'FAQ', 'Chao_TuDong': 'CHAO', 'TinhHuong_DacBiet': 'THDB', 'LoTrinh_MonHoc': 'LTMH'};
+            const groups = {'Giới thiệu': 'GT', 'Cờ Vua': 'CV', 'Vẽ': 'VE', 'Toán Tư Duy': 'SB', 'Tiền Tiểu Học': 'TTH', 'Rèn Chữ': 'RC', 'Học Phí': 'HP', 'Giáo Viên': 'GV', 'Cơ Sở Vật Chất': 'CSVC', 'Đăng Ký': 'DK'};
+            const count = faqDatabase.filter(f => f.loaiCauHoi === type && f.nhomFAQ === group).length + 1;
+            return `${prefixes[type] || 'FAQ'}-${groups[group] || 'XX'}-${String(count).padStart(3, '0')}`;
+        }
+
+        function copyText(btn, text) {
+            navigator.clipboard.writeText(text.replace(/\\n/g, '\n')).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = '✅ Đã sao chép!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
             });
         }
 
-        function escapeTxt(text) {
-            return text
-                .replace(/\\/g, '\\\\')
-                .replace(/'/g, "\\'")
-                .replace(/"/g, '\\"')
-                .replace(/\n/g, '\\n')
-                .replace(/\r/g, '\\r');
+        function copyFull(id) {
+            const faq = faqDatabase.find(f => f.id === id);
+            if (faq) {
+                let text = faq.noiDungTraLoi;
+                if (faq.ctaMacDinh) text += '\n\n' + faq.ctaMacDinh;
+                navigator.clipboard.writeText(text);
+                showToast('📋 Đã sao chép đầy đủ!', 'success');
+            }
         }
 
-        // ==================== KHỞI TẠO ====================
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ Ứng dụng FAQ SkillUp đã tải xong!');
-            console.log('📊 FAQ:', faqData.length, 'câu hỏi');
-            console.log('💬 Template:', templateData.length, 'mẫu');
-            console.log('⚡ Situations:', situationData.length, 'tình huống');
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
 
-            // Gắn sự kiện Enter cho search
-            document.getElementById('faqSearch').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') searchFAQ();
-            });
-            document.getElementById('templateSearch').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') searchTemplate();
-            });
-            document.getElementById('situationSearch').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') searchSituation();
-            });
+        function escapeCopy(text) {
+            if (!text) return '';
+            return text.replace(/`/g,'\\`').replace(/\$/g,'\\$').replace(/\n/g,'\\n');
+        }
 
-            // Khởi tạo FAQ tab
-            initFAQ();
+        function formatDate(d) {
+            return d.toISOString().slice(0,10).replace(/-/g,'');
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], {type});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showToast(msg, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
         });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
