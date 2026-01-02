@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 SkillUp FAQ Master Pro v2.0</title>
+    <title>🎯 SkillUp FAQ Master Pro v3.0 - Secure Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <style>
         :root {
             --primary: #667eea;
@@ -161,6 +162,120 @@
             display: block;
         }
 
+        .login-success {
+            color: var(--success);
+            margin-top: 15px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .login-success.show {
+            display: block;
+        }
+
+        /* Security Badge */
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .security-badge::before {
+            content: '🔒';
+        }
+
+        /* Setup Wizard */
+        .setup-wizard {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .setup-wizard h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .setup-step {
+            display: none;
+        }
+
+        .setup-step.active {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+        }
+
+        .password-strength {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            text-align: left;
+        }
+
+        .password-strength.weak {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .password-strength.medium {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .password-strength.strong {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .strength-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color);
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .strength-bar-fill {
+            height: 100%;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
         /* Header */
         header {
             text-align: center;
@@ -246,6 +361,10 @@
         .tab-btn.active {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
+        }
+
+        .tab-btn.admin-only {
+            border: 2px dashed var(--warning);
         }
 
         .tab-content {
@@ -433,6 +552,12 @@
             flex-wrap: wrap;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
         /* Search Section */
         .search-section {
             background: var(--card-bg);
@@ -582,6 +707,16 @@
         [data-theme="dark"] .faq-tag.priority-high {
             background: #7f1d1d;
             color: #fca5a5;
+        }
+
+        .faq-tag.encrypted {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        [data-theme="dark"] .faq-tag.encrypted {
+            background: #14532d;
+            color: #86efac;
         }
 
         .question-text {
@@ -766,6 +901,87 @@
             background: var(--light);
         }
 
+        /* User Management Table */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-table th {
+            background: var(--light);
+            font-weight: 600;
+        }
+
+        .user-table tr:hover {
+            background: var(--light);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .role-badge.admin {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .role-badge.user {
+            background: var(--light);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Security Panel */
+        .security-panel {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .security-panel h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .security-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .security-feature {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .security-feature-icon {
+            font-size: 1.5em;
+        }
+
+        .security-feature-text {
+            font-size: 0.9em;
+        }
+
         /* Backup Info */
         .backup-info {
             background: var(--light);
@@ -879,6 +1095,33 @@
             font-size: 0.9em;
         }
 
+        .info-box.warning {
+            border-left-color: var(--warning);
+            background: #feebc8;
+        }
+
+        [data-theme="dark"] .info-box.warning {
+            background: #78350f;
+        }
+
+        .info-box.danger {
+            border-left-color: var(--danger);
+            background: #fed7d7;
+        }
+
+        [data-theme="dark"] .info-box.danger {
+            background: #7f1d1d;
+        }
+
+        .info-box.success {
+            border-left-color: var(--success);
+            background: #c6f6d5;
+        }
+
+        [data-theme="dark"] .info-box.success {
+            background: #14532d;
+        }
+
         /* No Results */
         .no-results {
             grid-column: 1 / -1;
@@ -930,6 +1173,33 @@
             border-radius: 4px;
             font-family: monospace;
             font-weight: 600;
+        }
+
+        /* Encryption Status */
+        .encryption-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+
+        /* Session Info */
+        .session-info {
+            background: var(--light);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         /* Animations */
@@ -984,28 +1254,185 @@
         .section-header:first-of-type {
             margin-top: 0;
         }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Password Toggle */
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            opacity: 0.6;
+        }
+
+        .password-toggle:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
+    <!-- Initial Setup Wizard (First Time Only) -->
+    <div id="setupOverlay" class="login-overlay hidden">
+        <div class="setup-wizard">
+            <div class="step-indicator">
+                <div class="step-dot active" id="stepDot1"></div>
+                <div class="step-dot" id="stepDot2"></div>
+                <div class="step-dot" id="stepDot3"></div>
+            </div>
+
+            <!-- Step 1: Welcome -->
+            <div class="setup-step active" id="setupStep1">
+                <h2>🎉 Chào mừng đến với SkillUp FAQ Master Pro</h2>
+                <p style="margin: 20px 0; color: var(--text-secondary);">
+                    Phiên bản 3.0 - Secure Edition<br>
+                    Lần đầu sử dụng, bạn cần thiết lập tài khoản Admin.
+                </p>
+                <div class="security-badge" style="margin-bottom: 20px;">
+                    Bảo mật AES-256 + SHA-256
+                </div>
+                <button class="btn btn-primary" onclick="nextSetupStep(2)">
+                    🚀 Bắt đầu thiết lập
+                </button>
+            </div>
+
+            <!-- Step 2: Create Admin Account -->
+            <div class="setup-step" id="setupStep2">
+                <h2>👤 Tạo tài khoản Admin</h2>
+                <p style="margin: 20px 0; color: var(--text-secondary);">
+                    Tài khoản này sẽ có toàn quyền quản lý hệ thống.
+                </p>
+                <form id="setupAdminForm" style="text-align: left;">
+                    <div class="form-group">
+                        <label class="form-label">Tên đăng nhập <span class="required">*</span></label>
+                        <input type="text" id="setupUsername" class="form-input" 
+                            placeholder="admin" required minlength="3" maxlength="20"
+                            pattern="[a-zA-Z0-9_]+" title="Chỉ chứa chữ, số và dấu gạch dưới">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tên hiển thị <span class="required">*</span></label>
+                        <input type="text" id="setupDisplayName" class="form-input" 
+                            placeholder="Administrator" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu <span class="required">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="setupPassword" class="form-input" 
+                                placeholder="Tối thiểu 8 ký tự" required minlength="8"
+                                oninput="checkPasswordStrength(this.value)">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('setupPassword', this)">👁️</button>
+                        </div>
+                        <div id="passwordStrengthIndicator" class="password-strength" style="display:none;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Xác nhận mật khẩu <span class="required">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="setupPasswordConfirm" class="form-input" 
+                                placeholder="Nhập lại mật khẩu" required>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('setupPasswordConfirm', this)">👁️</button>
+                        </div>
+                    </div>
+                    <div class="btn-group" style="justify-content: space-between; margin-top: 20px;">
+                        <button type="button" class="btn btn-outline" onclick="nextSetupStep(1)">← Quay lại</button>
+                        <button type="submit" class="btn btn-primary">Tiếp tục →</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 3: Encryption Key -->
+            <div class="setup-step" id="setupStep3">
+                <h2>🔐 Thiết lập mã hóa dữ liệu</h2>
+                <p style="margin: 20px 0; color: var(--text-secondary);">
+                    Tạo khóa bí mật để mã hóa toàn bộ dữ liệu FAQ.<br>
+                    <strong>⚠️ Hãy ghi nhớ khóa này!</strong>
+                </p>
+                <form id="setupEncryptionForm" style="text-align: left;">
+                    <div class="form-group">
+                        <label class="form-label">Khóa mã hóa <span class="required">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="setupEncryptionKey" class="form-input" 
+                                placeholder="Tối thiểu 12 ký tự" required minlength="12">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('setupEncryptionKey', this)">👁️</button>
+                        </div>
+                        <span class="hint" style="color: var(--text-secondary); font-size: 0.85em;">
+                            Khóa này dùng để mã hóa/giải mã dữ liệu. Mất khóa = mất dữ liệu!
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Xác nhận khóa <span class="required">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="setupEncryptionKeyConfirm" class="form-input" 
+                                placeholder="Nhập lại khóa mã hóa" required>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('setupEncryptionKeyConfirm', this)">👁️</button>
+                        </div>
+                    </div>
+                    <div class="info-box warning">
+                        <strong>⚠️ Quan trọng:</strong> Khóa mã hóa không thể khôi phục nếu bạn quên. 
+                        Hãy lưu lại ở nơi an toàn!
+                    </div>
+                    <div class="btn-group" style="justify-content: space-between; margin-top: 20px;">
+                        <button type="button" class="btn btn-outline" onclick="nextSetupStep(2)">← Quay lại</button>
+                        <button type="submit" class="btn btn-success">✅ Hoàn tất thiết lập</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Overlay -->
-    <div id="loginOverlay" class="login-overlay">
+    <div id="loginOverlay" class="login-overlay hidden">
         <div class="login-box">
             <h1>🎯 SkillUp FAQ Master</h1>
             <p>Hệ thống Quản lý FAQ Chuyên nghiệp</p>
-            <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="security-badge">
+                Bảo mật AES-256 + SHA-256
+            </div>
+            <form class="login-form" onsubmit="handleLogin(event)" style="margin-top: 25px;">
                 <div class="form-group">
                     <label>👤 Tên đăng nhập</label>
-                    <input type="text" id="loginUsername" placeholder="Nhập username" required>
+                    <input type="text" id="loginUsername" placeholder="Nhập username" required autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label>🔒 Mật khẩu</label>
-                    <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required autocomplete="current-password">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
+                    </div>
                 </div>
-                <button type="submit" class="login-btn">🚀 Đăng nhập</button>
-                <p class="login-error" id="loginError">❌ Sai tên đăng nhập hoặc mật khẩu!</p>
+                <div class="form-group">
+                    <label>🔐 Khóa mã hóa</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginEncryptionKey" placeholder="Nhập khóa để giải mã dữ liệu" required>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('loginEncryptionKey', this)">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">🚀 Đăng nhập</button>
+                <p class="login-error" id="loginError">❌ Sai thông tin đăng nhập!</p>
+                <p class="login-success" id="loginSuccess">✅ Đăng nhập thành công!</p>
             </form>
             <p style="margin-top: 20px; font-size: 0.8em; color: var(--text-secondary);">
-                © [2026] Phát triển bởi AdminFeliz  - Liên hệ: 0986509106
+                v3.0 Secure Edition - Mã hóa end-to-end
             </p>
         </div>
     </div>
@@ -1040,7 +1467,7 @@
         </div>
         <div class="shortcut-item">
             <span>Hiện phím tắt</span>
-            <span class="shortcut-key"></span>
+            <span class="shortcut-key">Ctrl+/</span>
         </div>
     </div>
 
@@ -1048,18 +1475,29 @@
     <div class="container" id="mainApp" style="display: none;">
         <header>
             <h1>🎯 SkillUp FAQ Master Pro</h1>
-            <p>Hệ thống Quản lý FAQ Chuyên nghiệp v2.0</p>
+            <p>Hệ thống Quản lý FAQ Chuyên nghiệp v3.0 - Secure Edition</p>
             <div class="header-actions">
                 <div class="user-info">
                     <span>👤</span>
                     <span id="currentUser">Admin</span>
                     <span id="userRole" class="faq-tag type">Admin</span>
+                    <span class="faq-tag encrypted">🔒 Mã hóa</span>
                 </div>
+                <button class="btn btn-outline" style="color: white; border-color: white;" onclick="lockSession()">
+                    🔐 Khóa
+                </button>
                 <button class="btn btn-outline" style="color: white; border-color: white;" onclick="logout()">
                     🚪 Đăng xuất
                 </button>
             </div>
         </header>
+
+        <!-- Session Info -->
+        <div class="session-info" id="sessionInfo">
+            <span>🕐 Phiên làm việc: <strong id="sessionTime">00:00:00</strong></span>
+            <span>📊 Dữ liệu: <strong id="dataStatus">Đã mã hóa</strong></span>
+            <span>🔄 Lần lưu cuối: <strong id="lastSaveInfo">-</strong></span>
+        </div>
 
         <!-- Navigation Tabs -->
         <div class="tabs-nav">
@@ -1069,11 +1507,17 @@
             <button class="tab-btn" onclick="switchTab(event, 'templates')" data-tab="templates">💬 Mẫu Tin Nhắn</button>
             <button class="tab-btn" onclick="switchTab(event, 'situations')" data-tab="situations">⚡ Tình Huống</button>
             <button class="tab-btn" onclick="switchTab(event, 'backup')" data-tab="backup">💾 Sao Lưu</button>
+            <button class="tab-btn admin-only" onclick="switchTab(event, 'security')" data-tab="security" id="securityTab">🔐 Bảo Mật</button>
         </div>
 
         <!-- TAB 1: SEARCH -->
         <div id="search" class="tab-content active">
             <div class="search-section">
+                <div class="encryption-status">
+                    <span>🔒</span>
+                    <span>by Admin Feliz 0986509106 | Tìm kiếm an toàn</span>
+                </div>
+
                 <div class="info-box">
                     💡 <strong>Mẹo:</strong> Sử dụng <kbd>Ctrl+K</kbd> để focus vào ô tìm kiếm | Hỗ trợ tìm kiếm gần đúng (fuzzy search)
                 </div>
@@ -1407,6 +1851,10 @@
                     <h2 class="card-title">💾 Sao Lưu & Khôi Phục</h2>
                 </div>
 
+                <div class="info-box success">
+                    🔒 <strong>An toàn:</strong> Tất cả backup được mã hóa AES-256 trước khi xuất file.
+                </div>
+
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">⏱️ Tự động sao lưu</label>
@@ -1449,9 +1897,161 @@
             </div>
         </div>
 
+        <!-- TAB 7: SECURITY (Admin Only) -->
+        <div id="security" class="tab-content">
+            <div class="security-panel">
+                <h3>🛡️ Tình trạng Bảo mật</h3>
+                <div class="security-features">
+                    <div class="security-feature">
+                        <span class="security-feature-icon">🔐</span>
+                        <div class="security-feature-text">
+                            <strong>Mã hóa AES-256</strong><br>
+                            Dữ liệu được bảo vệ
+                        </div>
+                    </div>
+                    <div class="security-feature">
+                        <span class="security-feature-icon">🔑</span>
+                        <div class="security-feature-text">
+                            <strong>SHA-256 + Salt</strong><br>
+                            Mật khẩu được hash
+                        </div>
+                    </div>
+                    <div class="security-feature">
+                        <span class="security-feature-icon">🚫</span>
+                        <div class="security-feature-text">
+                            <strong>Zero Plain Text</strong><br>
+                            Không lưu mật khẩu thật
+                        </div>
+                    </div>
+                    <div class="security-feature">
+                        <span class="security-feature-icon">⏰</span>
+                        <div class="security-feature-text">
+                            <strong>Auto Lock</strong><br>
+                            Tự khóa sau 30 phút
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">👥 Quản lý Người dùng</h2>
+                    <button class="btn btn-primary btn-sm" onclick="showAddUserModal()">➕ Thêm User</button>
+                </div>
+
+                <div class="info-box warning">
+                    ⚠️ <strong>Chỉ Admin</strong> mới có quyền quản lý người dùng và xem tab này.
+                </div>
+
+                <div class="data-table-wrapper">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Tên hiển thị</th>
+                                <th>Vai trò</th>
+                                <th>Ngày tạo</th>
+                                <th>Đăng nhập cuối</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🔐 Đổi Mật khẩu</h2>
+                </div>
+                <form id="changePasswordForm" onsubmit="changePassword(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Mật khẩu hiện tại <span class="required">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="currentPassword" class="form-input" required>
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('currentPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mật khẩu mới <span class="required">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="newPassword" class="form-input" required minlength="8">
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Xác nhận mật khẩu mới <span class="required">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="confirmNewPassword" class="form-input" required>
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmNewPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 15px;">🔄 Đổi mật khẩu</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🔑 Đổi Khóa Mã hóa</h2>
+                </div>
+                <div class="info-box danger">
+                    ⚠️ <strong>Cảnh báo:</strong> Đổi khóa mã hóa sẽ mã hóa lại TOÀN BỘ dữ liệu. 
+                    Quá trình này không thể hoàn tác!
+                </div>
+                <form id="changeEncryptionKeyForm" onsubmit="changeEncryptionKey(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Khóa hiện tại <span class="required">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="currentEncKey" class="form-input" required>
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('currentEncKey', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Khóa mới <span class="required">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="newEncKey" class="form-input" required minlength="12">
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newEncKey', this)">👁️</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Xác nhận khóa mới <span class="required">*</span></label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="confirmNewEncKey" class="form-input" required>
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmNewEncKey', this)">👁️</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-danger" style="margin-top: 15px;">🔄 Đổi khóa mã hóa</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📋 Nhật ký Bảo mật</h2>
+                </div>
+                <div class="data-table-wrapper" style="max-height: 300px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Hành động</th>
+                                <th>Người thực hiện</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody id="securityLogBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <div class="footer">
-            <p>🎯 SkillUp FAQ Master Pro v2.0 by Admin Feliz 0986509106 | Phím tắt: <kbd>Ctrl+/</kbd></p>
+            <p>🎯 SkillUp FAQ Master Pro v3.0 Secure Edition | Phím tắt: <kbd>Ctrl+/</kbd></p>
+            <p style="margin-top: 5px; font-size: 0.8em;">🔒 Bảo mật: AES-256 + SHA-256 | Dữ liệu được mã hóa end-to-end</p>
         </div>
     </div>
 
@@ -1480,6 +2080,9 @@
                 <label class="form-label">Chọn file (JSON, XLSX, CSV):</label>
                 <input type="file" id="importFile" class="form-input" accept=".json,.xlsx,.csv">
             </div>
+            <div class="info-box">
+                💡 File JSON được mã hóa sẽ tự động giải mã khi nhập.
+            </div>
             <div class="btn-group" style="margin-top: 15px;">
                 <button class="btn btn-primary" onclick="processImport()">📥 Nhập</button>
                 <button class="btn btn-outline" onclick="closeModal('importModal')">Hủy</button>
@@ -1498,7 +2101,7 @@
                 <label class="form-label">Chọn file backup (JSON):</label>
                 <input type="file" id="restoreFile" class="form-input" accept=".json">
             </div>
-            <div class="info-box">
+            <div class="info-box warning">
                 ⚠️ <strong>Lưu ý:</strong> Việc khôi phục sẽ thay thế toàn bộ dữ liệu hiện tại!
             </div>
             <div class="btn-group" style="margin-top: 15px;">
@@ -1508,22 +2111,177 @@
         </div>
     </div>
 
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Thêm Người dùng</h3>
+                <button class="modal-close" onclick="closeModal('addUserModal')">&times;</button>
+            </div>
+            <form id="addUserForm" onsubmit="addNewUser(event)">
+                <div class="form-group">
+                    <label class="form-label">Username <span class="required">*</span></label>
+                    <input type="text" id="newUsername" class="form-input" required 
+                        minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+"
+                        placeholder="Chỉ chứa chữ, số và dấu _">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tên hiển thị <span class="required">*</span></label>
+                    <input type="text" id="newDisplayName" class="form-input" required
+                        placeholder="Nguyễn Văn A">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu <span class="required">*</span></label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="newUserPassword" class="form-input" required minlength="8"
+                            placeholder="Tối thiểu 8 ký tự">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newUserPassword', this)">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Vai trò <span class="required">*</span></label>
+                    <select id="newUserRole" class="form-select" required>
+                        <option value="user">User (Nhân viên)</option>
+                        <option value="admin">Admin (Quản trị)</option>
+                    </select>
+                </div>
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">➕ Thêm</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addUserModal')">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Chỉnh sửa Người dùng</h3>
+                <button class="modal-close" onclick="closeModal('editUserModal')">&times;</button>
+            </div>
+            <form id="editUserForm" onsubmit="updateUser(event)">
+                <input type="hidden" id="editUserUsername">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="editUserUsernameDisplay" class="form-input" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tên hiển thị <span class="required">*</span></label>
+                    <input type="text" id="editDisplayName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu mới (để trống nếu không đổi)</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="editUserPassword" class="form-input" minlength="8"
+                            placeholder="Để trống = giữ nguyên">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('editUserPassword', this)">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Vai trò <span class="required">*</span></label>
+                    <select id="editUserRole" class="form-select" required>
+                        <option value="user">User (Nhân viên)</option>
+                        <option value="admin">Admin (Quản trị)</option>
+                    </select>
+                </div>
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">💾 Lưu</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('editUserModal')">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // ==================== SECURITY MODULE ====================
+        const SecurityModule = {
+            // Salt for password hashing (unique per installation)
+            SALT_PREFIX: 'SkillUp_FAQ_Master_2026_',
+            
+            // Generate random salt
+            generateSalt: function() {
+                const array = new Uint8Array(16);
+                crypto.getRandomValues(array);
+                return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+            },
+
+            // Hash password with SHA-256 + salt
+            hashPassword: async function(password, salt) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(this.SALT_PREFIX + salt + password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            },
+
+            // Encrypt data with AES-256
+            encrypt: function(data, key) {
+                try {
+                    const jsonStr = typeof data === 'string' ? data : JSON.stringify(data);
+                    return CryptoJS.AES.encrypt(jsonStr, key).toString();
+                } catch (e) {
+                    console.error('Encryption error:', e);
+                    return null;
+                }
+            },
+
+            // Decrypt data with AES-256
+            decrypt: function(encryptedData, key) {
+                try {
+                    const bytes = CryptoJS.AES.decrypt(encryptedData, key);
+                    const decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
+                    if (!decryptedStr) return null;
+                    try {
+                        return JSON.parse(decryptedStr);
+                    } catch {
+                        return decryptedStr;
+                    }
+                } catch (e) {
+                    console.error('Decryption error:', e);
+                    return null;
+                }
+            },
+
+            // Verify password
+            verifyPassword: async function(inputPassword, storedHash, salt) {
+                const inputHash = await this.hashPassword(inputPassword, salt);
+                return inputHash === storedHash;
+            },
+
+            // Check password strength
+            checkStrength: function(password) {
+                let score = 0;
+                if (password.length >= 8) score++;
+                if (password.length >= 12) score++;
+                if (/[a-z]/.test(password)) score++;
+                if (/[A-Z]/.test(password)) score++;
+                if (/[0-9]/.test(password)) score++;
+                if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+                if (score <= 2) return { level: 'weak', text: 'Yếu', color: '#f56565', percent: 33 };
+                if (score <= 4) return { level: 'medium', text: 'Trung bình', color: '#ed8936', percent: 66 };
+                return { level: 'strong', text: 'Mạnh', color: '#48bb78', percent: 100 };
+            }
+        };
+
         // ==================== CONFIGURATION ====================
         const CONFIG = {
-            USERS: {
-                'admin': { password: 'adminfz@123', role: 'admin', name: 'Administrator' },
-                'skillup': { password: 'su123', role: 'user', name: 'Nhân viên' }
-            },
             STORAGE_KEYS: {
-                FAQ: 'skillup_faq_db',
-                TEMPLATES: 'skillup_templates_db',
-                SITUATIONS: 'skillup_situations_db',
-                BACKUPS: 'skillup_backups',
+                USERS: 'skillup_users_secure',
+                FAQ: 'skillup_faq_encrypted',
+                TEMPLATES: 'skillup_templates_encrypted',
+                SITUATIONS: 'skillup_situations_encrypted',
+                BACKUPS: 'skillup_backups_encrypted',
                 DRAFT: 'skillup_form_draft',
                 THEME: 'skillup_theme',
-                SESSION: 'skillup_session'
-            }
+                SESSION: 'skillup_session_secure',
+                SECURITY_LOG: 'skillup_security_log',
+                SYSTEM_INIT: 'skillup_system_initialized',
+                ENC_KEY_HASH: 'skillup_enc_key_hash'
+            },
+            SESSION_TIMEOUT: 30 * 60 * 1000, // 30 minutes
+            AUTO_LOCK_INTERVAL: 60 * 1000 // Check every minute
         };
 
         // ==================== STATE ====================
@@ -1531,10 +2289,17 @@
         let templateDatabase = [];
         let situationDatabase = [];
         let backupHistory = [];
+        let usersDatabase = [];
+        let securityLog = [];
         let autosaveTimer = null;
         let autoBackupTimer = null;
+        let sessionTimer = null;
+        let activityTimer = null;
+        let lastActivity = Date.now();
         let currentEditId = null;
         let currentUser = null;
+        let encryptionKey = null;
+        let sessionStartTime = null;
 
         // ==================== SAMPLE DATA ====================
         const sampleFAQData = [
@@ -1646,38 +2411,221 @@
         ];
 
         // ==================== INITIALIZATION ====================
-        function init() {
+        async function init() {
             loadTheme();
-            checkSession();
-            loadDataFromStorage();
+            
+            // Check if system is initialized
+            const isInitialized = localStorage.getItem(CONFIG.STORAGE_KEYS.SYSTEM_INIT);
+            
+            if (!isInitialized) {
+                // First time setup
+                showSetupWizard();
+            } else {
+                // Normal login
+                showLoginScreen();
+            }
+            
             setupKeyboardShortcuts();
+            setupActivityTracking();
         }
 
-        function checkSession() {
-            const session = localStorage.getItem(CONFIG.STORAGE_KEYS.SESSION);
-            if (session) {
-                const data = JSON.parse(session);
-                if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
-                    currentUser = data;
-                    showMainApp();
+        function showSetupWizard() {
+            document.getElementById('setupOverlay').classList.remove('hidden');
+            document.getElementById('loginOverlay').classList.add('hidden');
+            
+            // Setup form handlers
+            document.getElementById('setupAdminForm').onsubmit = function(e) {
+                e.preventDefault();
+                
+                const password = document.getElementById('setupPassword').value;
+                const confirmPassword = document.getElementById('setupPasswordConfirm').value;
+                
+                if (password !== confirmPassword) {
+                    showToast('❌ Mật khẩu xác nhận không khớp!', 'error');
                     return;
                 }
-            }
-            document.getElementById('loginOverlay').classList.remove('hidden');
+                
+                nextSetupStep(3);
+            };
+            
+            document.getElementById('setupEncryptionForm').onsubmit = async function(e) {
+                e.preventDefault();
+                await completeSetup();
+            };
         }
 
-        function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            const user = CONFIG.USERS[username];
+        function nextSetupStep(step) {
+            document.querySelectorAll('.setup-step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.step-dot').forEach(d => d.classList.remove('active', 'completed'));
+            
+            document.getElementById('setupStep' + step).classList.add('active');
+            
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById('stepDot' + i);
+                if (i < step) dot.classList.add('completed');
+                if (i === step) dot.classList.add('active');
+            }
+        }
 
-            if (user && user.password === password) {
-                currentUser = { username, role: user.role, name: user.name, timestamp: Date.now() };
-                localStorage.setItem(CONFIG.STORAGE_KEYS.SESSION, JSON.stringify(currentUser));
-                showMainApp();
-            } else {
+        async function completeSetup() {
+            const username = document.getElementById('setupUsername').value;
+            const displayName = document.getElementById('setupDisplayName').value;
+            const password = document.getElementById('setupPassword').value;
+            const encKey = document.getElementById('setupEncryptionKey').value;
+            const encKeyConfirm = document.getElementById('setupEncryptionKeyConfirm').value;
+            
+            if (encKey !== encKeyConfirm) {
+                showToast('❌ Khóa mã hóa xác nhận không khớp!', 'error');
+                return;
+            }
+            
+            if (encKey.length < 12) {
+                showToast('❌ Khóa mã hóa phải có ít nhất 12 ký tự!', 'error');
+                return;
+            }
+            
+            try {
+                // Generate salt for password
+                const salt = SecurityModule.generateSalt();
+                const passwordHash = await SecurityModule.hashPassword(password, salt);
+                
+                // Create admin user
+                const adminUser = {
+                    username: username,
+                    name: displayName,
+                    role: 'admin',
+                    salt: salt,
+                    passwordHash: passwordHash,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: null
+                };
+                
+                // Hash encryption key for verification
+                const encKeyHash = await SecurityModule.hashPassword(encKey, 'enc_key_salt');
+                
+                // Initialize databases with encryption
+                const encryptedFAQ = SecurityModule.encrypt(sampleFAQData, encKey);
+                const encryptedTemplates = SecurityModule.encrypt(sampleTemplateData, encKey);
+                const encryptedSituations = SecurityModule.encrypt(sampleSituationData, encKey);
+                
+                // Save to localStorage
+                localStorage.setItem(CONFIG.STORAGE_KEYS.USERS, JSON.stringify([adminUser]));
+                localStorage.setItem(CONFIG.STORAGE_KEYS.FAQ, encryptedFAQ);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.TEMPLATES, encryptedTemplates);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.SITUATIONS, encryptedSituations);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.ENC_KEY_HASH, encKeyHash);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.SYSTEM_INIT, 'true');
+                localStorage.setItem(CONFIG.STORAGE_KEYS.SECURITY_LOG, JSON.stringify([{
+                    timestamp: new Date().toISOString(),
+                    action: 'SYSTEM_INIT',
+                    user: username,
+                    details: 'Hệ thống được khởi tạo lần đầu'
+                }]));
+                
+                showToast('✅ Thiết lập hoàn tất!', 'success');
+                
+                setTimeout(() => {
+                    document.getElementById('setupOverlay').classList.add('hidden');
+                    showLoginScreen();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Setup error:', error);
+                showToast('❌ Có lỗi xảy ra khi thiết lập!', 'error');
+            }
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('setupOverlay').classList.add('hidden');
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> Đang xác thực...';
+            loginBtn.disabled = true;
+            
+            try {
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                const inputEncKey = document.getElementById('loginEncryptionKey').value;
+                
+                // Load users
+                const usersData = localStorage.getItem(CONFIG.STORAGE_KEYS.USERS);
+                if (!usersData) {
+                    throw new Error('Không tìm thấy dữ liệu người dùng');
+                }
+                
+                const users = JSON.parse(usersData);
+                const user = users.find(u => u.username === username);
+                
+                if (!user) {
+                    throw new Error('Sai tên đăng nhập');
+                }
+                
+                // Verify password
+                const isValidPassword = await SecurityModule.verifyPassword(password, user.passwordHash, user.salt);
+                if (!isValidPassword) {
+                    throw new Error('Sai mật khẩu');
+                }
+                
+                // Verify encryption key
+                const storedEncKeyHash = localStorage.getItem(CONFIG.STORAGE_KEYS.ENC_KEY_HASH);
+                const inputEncKeyHash = await SecurityModule.hashPassword(inputEncKey, 'enc_key_salt');
+                
+                if (inputEncKeyHash !== storedEncKeyHash) {
+                    throw new Error('Sai khóa mã hóa');
+                }
+                
+                // Login successful
+                encryptionKey = inputEncKey;
+                currentUser = {
+                    username: user.username,
+                    name: user.name,
+                    role: user.role
+                };
+                
+                // Update last login
+                user.lastLogin = new Date().toISOString();
+                localStorage.setItem(CONFIG.STORAGE_KEYS.USERS, JSON.stringify(users));
+                
+                // Create session
+                sessionStartTime = Date.now();
+                const session = {
+                    username: user.username,
+                    name: user.name,
+                    role: user.role,
+                    timestamp: sessionStartTime
+                };
+                
+                // Store encrypted session
+                const encryptedSession = SecurityModule.encrypt(session, encryptionKey);
+                sessionStorage.setItem(CONFIG.STORAGE_KEYS.SESSION, encryptedSession);
+                
+                // Log login
+                addSecurityLog('LOGIN', user.username, 'Đăng nhập thành công');
+                
+                document.getElementById('loginError').classList.remove('show');
+                document.getElementById('loginSuccess').classList.add('show');
+                
+                setTimeout(() => {
+                    showMainApp();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('loginError').textContent = '❌ ' + error.message;
                 document.getElementById('loginError').classList.add('show');
+                document.getElementById('loginSuccess').classList.remove('show');
+                
+                // Log failed attempt
+                addSecurityLog('LOGIN_FAILED', document.getElementById('loginUsername').value, error.message);
+            } finally {
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
             }
         }
 
@@ -1687,40 +2635,500 @@
             document.getElementById('currentUser').textContent = currentUser.name;
             document.getElementById('userRole').textContent = currentUser.role === 'admin' ? 'Admin' : 'User';
             
+            // Hide security tab for non-admin users
+            if (currentUser.role !== 'admin') {
+                document.getElementById('securityTab').style.display = 'none';
+            }
+            
+            loadDecryptedData();
             initApp();
+            startSessionTimer();
+        }
+
+        function loadDecryptedData() {
+            try {
+                // Decrypt FAQ data
+                const encryptedFAQ = localStorage.getItem(CONFIG.STORAGE_KEYS.FAQ);
+                if (encryptedFAQ) {
+                    faqDatabase = SecurityModule.decrypt(encryptedFAQ, encryptionKey) || [];
+                }
+                
+                // Decrypt templates
+                const encryptedTemplates = localStorage.getItem(CONFIG.STORAGE_KEYS.TEMPLATES);
+                if (encryptedTemplates) {
+                    templateDatabase = SecurityModule.decrypt(encryptedTemplates, encryptionKey) || [];
+                }
+                
+                // Decrypt situations
+                const encryptedSituations = localStorage.getItem(CONFIG.STORAGE_KEYS.SITUATIONS);
+                if (encryptedSituations) {
+                    situationDatabase = SecurityModule.decrypt(encryptedSituations, encryptionKey) || [];
+                }
+                
+                // Decrypt backups
+                const encryptedBackups = localStorage.getItem(CONFIG.STORAGE_KEYS.BACKUPS);
+                if (encryptedBackups) {
+                    backupHistory = SecurityModule.decrypt(encryptedBackups, encryptionKey) || [];
+                }
+                
+                // Load users (not encrypted, just password hash)
+                const usersData = localStorage.getItem(CONFIG.STORAGE_KEYS.USERS);
+                if (usersData) {
+                    usersDatabase = JSON.parse(usersData);
+                }
+                
+                // Load security log
+                const logData = localStorage.getItem(CONFIG.STORAGE_KEYS.SECURITY_LOG);
+                if (logData) {
+                    securityLog = JSON.parse(logData);
+                }
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showToast('❌ Lỗi giải mã dữ liệu!', 'error');
+            }
+        }
+
+        function saveEncryptedData() {
+            try {
+                const encryptedFAQ = SecurityModule.encrypt(faqDatabase, encryptionKey);
+                const encryptedTemplates = SecurityModule.encrypt(templateDatabase, encryptionKey);
+                const encryptedSituations = SecurityModule.encrypt(situationDatabase, encryptionKey);
+                const encryptedBackups = SecurityModule.encrypt(backupHistory, encryptionKey);
+                
+                localStorage.setItem(CONFIG.STORAGE_KEYS.FAQ, encryptedFAQ);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.TEMPLATES, encryptedTemplates);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.SITUATIONS, encryptedSituations);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.BACKUPS, encryptedBackups);
+                
+                document.getElementById('lastSaveInfo').textContent = new Date().toLocaleTimeString('vi-VN');
+            } catch (error) {
+                console.error('Error saving data:', error);
+                showToast('❌ Lỗi mã hóa dữ liệu!', 'error');
+            }
         }
 
         function logout() {
-            localStorage.removeItem(CONFIG.STORAGE_KEYS.SESSION);
-            location.reload();
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                addSecurityLog('LOGOUT', currentUser.username, 'Đăng xuất');
+                
+                // Clear session
+                sessionStorage.removeItem(CONFIG.STORAGE_KEYS.SESSION);
+                encryptionKey = null;
+                currentUser = null;
+                faqDatabase = [];
+                templateDatabase = [];
+                situationDatabase = [];
+                
+                if (sessionTimer) clearInterval(sessionTimer);
+                if (autosaveTimer) clearInterval(autosaveTimer);
+                
+                location.reload();
+            }
         }
 
-        function initApp() {
-            initFilters();
-            displayFAQ(faqDatabase);
-            displayTemplates(templateDatabase);
-            displaySituations(situationDatabase);
-            updateStats();
-            updateDataTable();
-            updateAutosave();
-            loadBackupHistory();
-
-            document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') searchFAQ(); });
-            document.getElementById('templateSearch').addEventListener('keypress', e => { if (e.key === 'Enter') searchTemplates(); });
-            document.getElementById('situationSearch').addEventListener('keypress', e => { if (e.key === 'Enter') searchSituations(); });
+        function lockSession() {
+            addSecurityLog('SESSION_LOCK', currentUser.username, 'Khóa phiên làm việc');
+            
+            // Keep session but require re-authentication
+            encryptionKey = null;
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginEncryptionKey').value = '';
+            
+            showToast('🔐 Phiên làm việc đã khóa', 'warning');
         }
 
-        function loadDataFromStorage() {
-            faqDatabase = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.FAQ)) || sampleFAQData;
-            templateDatabase = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TEMPLATES)) || sampleTemplateData;
-            situationDatabase = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SITUATIONS)) || sampleSituationData;
-            backupHistory = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.BACKUPS)) || [];
+        // ==================== SESSION MANAGEMENT ====================
+        function startSessionTimer() {
+            sessionTimer = setInterval(() => {
+                if (sessionStartTime) {
+                    const elapsed = Date.now() - sessionStartTime;
+                    const hours = Math.floor(elapsed / 3600000);
+                    const minutes = Math.floor((elapsed % 3600000) / 60000);
+                    const seconds = Math.floor((elapsed % 60000) / 1000);
+                    document.getElementById('sessionTime').textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                // Check for auto-lock
+                if (Date.now() - lastActivity > CONFIG.SESSION_TIMEOUT) {
+                    lockSession();
+                }
+            }, 1000);
+        }
+        function setupActivityTracking() {
+            ['click', 'keypress', 'mousemove', 'scroll'].forEach(event => {
+                document.addEventListener(event, () => {
+                    lastActivity = Date.now();
+                }, { passive: true });
+            });
         }
 
-        function saveDataToStorage() {
-            localStorage.setItem(CONFIG.STORAGE_KEYS.FAQ, JSON.stringify(faqDatabase));
-            localStorage.setItem(CONFIG.STORAGE_KEYS.TEMPLATES, JSON.stringify(templateDatabase));
-            localStorage.setItem(CONFIG.STORAGE_KEYS.SITUATIONS, JSON.stringify(situationDatabase));
+        // ==================== SECURITY LOG ====================
+        function addSecurityLog(action, user, details) {
+            const logEntry = {
+                timestamp: new Date().toISOString(),
+                action: action,
+                user: user,
+                details: details
+            };
+            
+            securityLog.unshift(logEntry);
+            
+            // Keep only last 100 entries
+            if (securityLog.length > 100) {
+                securityLog = securityLog.slice(0, 100);
+            }
+            
+            localStorage.setItem(CONFIG.STORAGE_KEYS.SECURITY_LOG, JSON.stringify(securityLog));
+        }
+
+        function updateSecurityLogDisplay() {
+            const tbody = document.getElementById('securityLogBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = securityLog.slice(0, 50).map(log => `
+                <tr>
+                    <td>${new Date(log.timestamp).toLocaleString('vi-VN')}</td>
+                    <td><span class="faq-tag ${log.action.includes('FAIL') ? 'priority-high' : 'type'}">${log.action}</span></td>
+                    <td>${escapeHtml(log.user)}</td>
+                    <td>${escapeHtml(log.details)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ==================== USER MANAGEMENT ====================
+        function updateUserTable() {
+            const tbody = document.getElementById('userTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = usersDatabase.map(user => `
+                <tr>
+                    <td><strong>${escapeHtml(user.username)}</strong></td>
+                    <td>${escapeHtml(user.name)}</td>
+                    <td><span class="role-badge ${user.role}">${user.role === 'admin' ? 'Admin' : 'User'}</span></td>
+                    <td>${new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
+                    <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleString('vi-VN') : 'Chưa đăng nhập'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="showEditUserModal('${user.username}')" ${user.username === currentUser.username ? '' : ''}>✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.username}')" ${user.username === currentUser.username ? 'disabled title="Không thể xóa chính mình"' : ''}>🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showAddUserModal() {
+            if (currentUser.role !== 'admin') {
+                showToast('❌ Bạn không có quyền thêm người dùng!', 'error');
+                return;
+            }
+            document.getElementById('addUserForm').reset();
+            openModal('addUserModal');
+        }
+
+        async function addNewUser(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('newUsername').value.trim();
+            const displayName = document.getElementById('newDisplayName').value.trim();
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            
+            // Check if username exists
+            if (usersDatabase.find(u => u.username === username)) {
+                showToast('❌ Username đã tồn tại!', 'error');
+                return;
+            }
+            
+            try {
+                const salt = SecurityModule.generateSalt();
+                const passwordHash = await SecurityModule.hashPassword(password, salt);
+                
+                const newUser = {
+                    username: username,
+                    name: displayName,
+                    role: role,
+                    salt: salt,
+                    passwordHash: passwordHash,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: null
+                };
+                
+                usersDatabase.push(newUser);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.USERS, JSON.stringify(usersDatabase));
+                
+                addSecurityLog('USER_CREATE', currentUser.username, `Tạo user mới: ${username} (${role})`);
+                
+                closeModal('addUserModal');
+                updateUserTable();
+                showToast('✅ Thêm người dùng thành công!', 'success');
+                
+            } catch (error) {
+                console.error('Error adding user:', error);
+                showToast('❌ Lỗi khi thêm người dùng!', 'error');
+            }
+        }
+
+        function showEditUserModal(username) {
+            const user = usersDatabase.find(u => u.username === username);
+            if (!user) return;
+            
+            document.getElementById('editUserUsername').value = username;
+            document.getElementById('editUserUsernameDisplay').value = username;
+            document.getElementById('editDisplayName').value = user.name;
+            document.getElementById('editUserRole').value = user.role;
+            document.getElementById('editUserPassword').value = '';
+            
+            openModal('editUserModal');
+        }
+
+        async function updateUser(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('editUserUsername').value;
+            const displayName = document.getElementById('editDisplayName').value.trim();
+            const newPassword = document.getElementById('editUserPassword').value;
+            const role = document.getElementById('editUserRole').value;
+            
+            const userIndex = usersDatabase.findIndex(u => u.username === username);
+            if (userIndex === -1) {
+                showToast('❌ Không tìm thấy người dùng!', 'error');
+                return;
+            }
+            
+            // Prevent removing the last admin
+            if (usersDatabase[userIndex].role === 'admin' && role !== 'admin') {
+                const adminCount = usersDatabase.filter(u => u.role === 'admin').length;
+                if (adminCount <= 1) {
+                    showToast('❌ Không thể bỏ quyền Admin của người dùng cuối cùng!', 'error');
+                    return;
+                }
+            }
+            
+            try {
+                usersDatabase[userIndex].name = displayName;
+                usersDatabase[userIndex].role = role;
+                
+                // Update password if provided
+                if (newPassword && newPassword.length >= 8) {
+                    const salt = SecurityModule.generateSalt();
+                    const passwordHash = await SecurityModule.hashPassword(newPassword, salt);
+                    usersDatabase[userIndex].salt = salt;
+                    usersDatabase[userIndex].passwordHash = passwordHash;
+                }
+                
+                localStorage.setItem(CONFIG.STORAGE_KEYS.USERS, JSON.stringify(usersDatabase));
+                
+                addSecurityLog('USER_UPDATE', currentUser.username, `Cập nhật user: ${username}`);
+                
+                // Update current user info if editing self
+                if (username === currentUser.username) {
+                    currentUser.name = displayName;
+                    currentUser.role = role;
+                    document.getElementById('currentUser').textContent = displayName;
+                    document.getElementById('userRole').textContent = role === 'admin' ? 'Admin' : 'User';
+                }
+                
+                closeModal('editUserModal');
+                updateUserTable();
+                showToast('✅ Cập nhật thành công!', 'success');
+                
+            } catch (error) {
+                console.error('Error updating user:', error);
+                showToast('❌ Lỗi khi cập nhật!', 'error');
+            }
+        }
+
+        async function deleteUser(username) {
+            if (username === currentUser.username) {
+                showToast('❌ Không thể xóa chính mình!', 'error');
+                return;
+            }
+            
+            const user = usersDatabase.find(u => u.username === username);
+            if (!user) return;
+            
+            // Prevent deleting the last admin
+            if (user.role === 'admin') {
+                const adminCount = usersDatabase.filter(u => u.role === 'admin').length;
+                if (adminCount <= 1) {
+                    showToast('❌ Không thể xóa Admin cuối cùng!', 'error');
+                    return;
+                }
+            }
+            
+            if (!confirm(`Bạn có chắc muốn xóa người dùng "${user.name}" (${username})?`)) {
+                return;
+            }
+            
+            usersDatabase = usersDatabase.filter(u => u.username !== username);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.USERS, JSON.stringify(usersDatabase));
+            
+            addSecurityLog('USER_DELETE', currentUser.username, `Xóa user: ${username}`);
+            
+            updateUserTable();
+            showToast('✅ Đã xóa người dùng!', 'success');
+        }
+
+        // ==================== PASSWORD MANAGEMENT ====================
+        async function changePassword(event) {
+            event.preventDefault();
+            
+            const currentPwd = document.getElementById('currentPassword').value;
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmNewPassword').value;
+            
+            if (newPwd !== confirmPwd) {
+                showToast('❌ Mật khẩu xác nhận không khớp!', 'error');
+                return;
+            }
+            
+            if (newPwd.length < 8) {
+                showToast('❌ Mật khẩu mới phải có ít nhất 8 ký tự!', 'error');
+                return;
+            }
+            
+            const userIndex = usersDatabase.findIndex(u => u.username === currentUser.username);
+            if (userIndex === -1) {
+                showToast('❌ Không tìm thấy người dùng!', 'error');
+                return;
+            }
+            
+            try {
+                // Verify current password
+                const isValid = await SecurityModule.verifyPassword(
+                    currentPwd, 
+                    usersDatabase[userIndex].passwordHash, 
+                    usersDatabase[userIndex].salt
+                );
+                
+                if (!isValid) {
+                    showToast('❌ Mật khẩu hiện tại không đúng!', 'error');
+                    return;
+                }
+                
+                // Update password
+                const newSalt = SecurityModule.generateSalt();
+                const newHash = await SecurityModule.hashPassword(newPwd, newSalt);
+                
+                usersDatabase[userIndex].salt = newSalt;
+                usersDatabase[userIndex].passwordHash = newHash;
+                
+                localStorage.setItem(CONFIG.STORAGE_KEYS.USERS, JSON.stringify(usersDatabase));
+                
+                addSecurityLog('PASSWORD_CHANGE', currentUser.username, 'Đổi mật khẩu thành công');
+                
+                document.getElementById('changePasswordForm').reset();
+                showToast('✅ Đổi mật khẩu thành công!', 'success');
+                
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showToast('❌ Lỗi khi đổi mật khẩu!', 'error');
+            }
+        }
+
+        async function changeEncryptionKey(event) {
+            event.preventDefault();
+            
+            const currentKey = document.getElementById('currentEncKey').value;
+            const newKey = document.getElementById('newEncKey').value;
+            const confirmKey = document.getElementById('confirmNewEncKey').value;
+            
+            if (newKey !== confirmKey) {
+                showToast('❌ Khóa xác nhận không khớp!', 'error');
+                return;
+            }
+            
+            if (newKey.length < 12) {
+                showToast('❌ Khóa mới phải có ít nhất 12 ký tự!', 'error');
+                return;
+            }
+            
+            // Verify current encryption key
+            const storedHash = localStorage.getItem(CONFIG.STORAGE_KEYS.ENC_KEY_HASH);
+            const currentKeyHash = await SecurityModule.hashPassword(currentKey, 'enc_key_salt');
+            
+            if (currentKeyHash !== storedHash) {
+                showToast('❌ Khóa hiện tại không đúng!', 'error');
+                return;
+            }
+            
+            if (!confirm('⚠️ CẢNH BÁO: Đổi khóa mã hóa sẽ mã hóa lại TOÀN BỘ dữ liệu. Bạn chắc chắn muốn tiếp tục?')) {
+                return;
+            }
+            
+            try {
+                showToast('🔄 Đang mã hóa lại dữ liệu...', 'warning');
+                
+                // Re-encrypt all data with new key
+                const newEncryptedFAQ = SecurityModule.encrypt(faqDatabase, newKey);
+                const newEncryptedTemplates = SecurityModule.encrypt(templateDatabase, newKey);
+                const newEncryptedSituations = SecurityModule.encrypt(situationDatabase, newKey);
+                const newEncryptedBackups = SecurityModule.encrypt(backupHistory, newKey);
+                
+                // Save new encrypted data
+                localStorage.setItem(CONFIG.STORAGE_KEYS.FAQ, newEncryptedFAQ);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.TEMPLATES, newEncryptedTemplates);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.SITUATIONS, newEncryptedSituations);
+                localStorage.setItem(CONFIG.STORAGE_KEYS.BACKUPS, newEncryptedBackups);
+                
+                // Update encryption key hash
+                const newKeyHash = await SecurityModule.hashPassword(newKey, 'enc_key_salt');
+                localStorage.setItem(CONFIG.STORAGE_KEYS.ENC_KEY_HASH, newKeyHash);
+                
+                // Update current session key
+                encryptionKey = newKey;
+                
+                addSecurityLog('ENCRYPTION_KEY_CHANGE', currentUser.username, 'Đổi khóa mã hóa thành công');
+                
+                document.getElementById('changeEncryptionKeyForm').reset();
+                showToast('✅ Đổi khóa mã hóa thành công!', 'success');
+                
+            } catch (error) {
+                console.error('Error changing encryption key:', error);
+                showToast('❌ Lỗi khi đổi khóa mã hóa!', 'error');
+            }
+        }
+
+        // ==================== PASSWORD UTILITIES ====================
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const indicator = document.getElementById('passwordStrengthIndicator');
+            if (!indicator) return;
+            
+            if (password.length === 0) {
+                indicator.style.display = 'none';
+                return;
+            }
+            
+            indicator.style.display = 'block';
+            const strength = SecurityModule.checkStrength(password);
+            
+            indicator.className = `password-strength ${strength.level}`;
+            indicator.innerHTML = `
+                <strong>Độ mạnh: ${strength.text}</strong>
+                <div class="strength-bar">
+                    <div class="strength-bar-fill" style="width: ${strength.percent}%; background: ${strength.color};"></div>
+                </div>
+                <small style="display:block;margin-top:5px;">
+                    ${password.length < 8 ? '• Cần ít nhất 8 ký tự<br>' : ''}
+                    ${!/[A-Z]/.test(password) ? '• Nên có chữ hoa<br>' : ''}
+                    ${!/[0-9]/.test(password) ? '• Nên có số<br>' : ''}
+                    ${!/[^a-zA-Z0-9]/.test(password) ? '• Nên có ký tự đặc biệt' : ''}
+                </small>
+            `;
         }
 
         // ==================== THEME ====================
@@ -1745,8 +3153,11 @@
                     switch(e.key.toLowerCase()) {
                         case 'k':
                             e.preventDefault();
-                            document.getElementById('searchInput')?.focus();
-                            switchTab({preventDefault:()=>{}, target: document.querySelector('[data-tab="search"]')}, 'search');
+                            const searchInput = document.getElementById('searchInput');
+                            if (searchInput) {
+                                searchInput.focus();
+                                switchTab({preventDefault:()=>{}, target: document.querySelector('[data-tab="search"]')}, 'search');
+                            }
                             break;
                         case 'n':
                             e.preventDefault();
@@ -1778,6 +3189,13 @@
         // ==================== TAB SWITCHING ====================
         function switchTab(event, tabName) {
             event.preventDefault();
+            
+            // Check permission for security tab
+            if (tabName === 'security' && currentUser && currentUser.role !== 'admin') {
+                showToast('❌ Bạn không có quyền truy cập tab này!', 'error');
+                return;
+            }
+            
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
@@ -1785,6 +3203,26 @@
             
             if (tabName === 'manage') updateDataTable();
             if (tabName === 'backup') loadBackupHistory();
+            if (tabName === 'security') {
+                updateUserTable();
+                updateSecurityLogDisplay();
+            }
+        }
+
+        // ==================== INIT APP ====================
+        function initApp() {
+            initFilters();
+            displayFAQ(faqDatabase);
+            displayTemplates(templateDatabase);
+            displaySituations(situationDatabase);
+            updateStats();
+            updateDataTable();
+            updateAutosave();
+            loadBackupHistory();
+
+            document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') searchFAQ(); });
+            document.getElementById('templateSearch').addEventListener('keypress', e => { if (e.key === 'Enter') searchTemplates(); });
+            document.getElementById('situationSearch').addEventListener('keypress', e => { if (e.key === 'Enter') searchSituations(); });
         }
 
         // ==================== SEARCH & FILTER ====================
@@ -1864,6 +3302,7 @@
                     <span class="faq-tag type">${item.loaiCauHoi}</span>
                     ${item.nhomFAQ && item.nhomFAQ !== '-' ? `<span class="faq-tag">${item.nhomFAQ}</span>` : ''}
                     ${item.uuTien <= 15 ? `<span class="faq-tag priority-high">⚡ ${item.uuTien}</span>` : ''}
+                    <span class="faq-tag encrypted">🔒</span>
                     <h3>${escapeHtml(item.tieuDe)}</h3>
                     ${item.cauHoiGoc ? `<p class="question-text">❓ ${escapeHtml(item.cauHoiGoc)}</p>` : ''}
                     <div class="answer-section">
@@ -1885,11 +3324,15 @@
         }
 
         function displayTemplates(data) {
-            document.getElementById('templateResults').innerHTML = data.map(item => `
+            const container = document.getElementById('templateResults');
+            if (!container) return;
+            
+            container.innerHTML = data.map(item => `
                 <div class="faq-card">
                     <span class="faq-tag type">💬 Mẫu chào</span>
-                    <h3>${item.name}</h3>
-                    <p class="question-text">⚡ ${item.trigger}</p>
+                    <span class="faq-tag encrypted">🔒</span>
+                    <h3>${escapeHtml(item.name)}</h3>
+                    <p class="question-text">⚡ ${escapeHtml(item.trigger)}</p>
                     <div class="answer-section">
                         <div class="answer-content">${escapeHtml(item.content)}</div>
                     </div>
@@ -1899,11 +3342,15 @@
         }
 
         function displaySituations(data) {
-            document.getElementById('situationResults').innerHTML = data.map(item => `
+            const container = document.getElementById('situationResults');
+            if (!container) return;
+            
+            container.innerHTML = data.map(item => `
                 <div class="faq-card">
-                    <span class="faq-tag type">⚡ ${item.type}</span>
-                    <h3>🎯 ${item.type}</h3>
-                    <p class="question-text">🔑 ${item.keywords}</p>
+                    <span class="faq-tag type">⚡ ${escapeHtml(item.type)}</span>
+                    <span class="faq-tag encrypted">🔒</span>
+                    <h3>🎯 ${escapeHtml(item.type)}</h3>
+                    <p class="question-text">🔑 ${escapeHtml(item.keywords)}</p>
                     <div class="answer-section">
                         <div class="answer-content">${escapeHtml(item.content)}</div>
                         ${item.cta && item.cta !== '-' ? `<div class="cta-box">💬 ${escapeHtml(item.cta)}</div>` : ''}
@@ -1952,8 +3399,11 @@
                 if (idx !== -1) {
                     formData.id = currentEditId;
                     formData.maCauHoi = faqDatabase[idx].maCauHoi;
+                    formData.ngayTao = faqDatabase[idx].ngayTao;
+                    formData.ngayCapNhat = new Date().toISOString();
                     faqDatabase[idx] = {...faqDatabase[idx], ...formData};
                     showToast('✅ Cập nhật thành công!', 'success');
+                    addSecurityLog('FAQ_UPDATE', currentUser.username, `Cập nhật FAQ: ${formData.tieuDe}`);
                 }
                 currentEditId = null;
             } else {
@@ -1962,9 +3412,10 @@
                 formData.ngayTao = new Date().toISOString();
                 faqDatabase.push(formData);
                 showToast('✅ Thêm FAQ thành công!', 'success');
+                addSecurityLog('FAQ_CREATE', currentUser.username, `Tạo FAQ mới: ${formData.tieuDe}`);
             }
             
-            saveDataToStorage();
+            saveEncryptedData();
             updateStats();
             initFilters();
             displayFAQ(faqDatabase);
@@ -2019,21 +3470,29 @@
         }
 
         function populateForm(data) {
-            Object.keys(data).forEach(key => {
-                const el = document.getElementById(key.charAt(0).toLowerCase() + key.slice(1).replace(/([A-Z])/g, c => c));
-                if (el) el.value = data[key] || '';
-            });
             document.getElementById('loaiCauHoi').value = data.loaiCauHoi || '';
             document.getElementById('nhomFAQ').value = data.nhomFAQ || '';
+            document.getElementById('phanNhomCon').value = data.phanNhomCon || '';
             document.getElementById('tieuDe').value = data.tieuDe || '';
             document.getElementById('cauHoiGoc').value = data.cauHoiGoc || '';
             document.getElementById('tuKhoaChinh').value = data.tuKhoaChinh || '';
             document.getElementById('tuKhoaMoRong').value = data.tuKhoaMoRong || '';
+            document.getElementById('dieuKienKichHoat').value = data.dieuKienKichHoat || '';
             document.getElementById('noiDungTraLoi').value = data.noiDungTraLoi || '';
             document.getElementById('ctaMacDinh').value = data.ctaMacDinh || '';
+            document.getElementById('ctaThayThe').value = data.ctaThayThe || '';
+            document.getElementById('doTuoi').value = data.doTuoi || 'Tất cả';
+            document.getElementById('giaiDoanTuVan').value = data.giaiDoanTuVan || 'Tất cả';
             document.getElementById('uuTien').value = data.uuTien || 50;
             document.getElementById('trangThai').value = data.trangThai || 'Chờ duyệt';
             document.getElementById('emailNguoiTao').value = data.nguoiTao || '';
+            document.getElementById('ghiChuNoiBo').value = data.ghiChuNoiBo || '';
+            
+            // Handle checkboxes
+            document.querySelectorAll('input[name="monHoc"]').forEach(cb => {
+                cb.checked = data.monHocLienQuan && data.monHocLienQuan.includes(cb.value);
+            });
+            
             handleTypeChange();
         }
 
@@ -2043,10 +3502,17 @@
                 <div class="faq-card" style="box-shadow:none;">
                     <span class="faq-tag type">${data.loaiCauHoi}</span>
                     <span class="faq-tag">${data.nhomFAQ}</span>
+                    <span class="faq-tag encrypted">🔒 Sẽ được mã hóa</span>
                     <h3>${escapeHtml(data.tieuDe || '(Chưa có tiêu đề)')}</h3>
+                    <p class="question-text">❓ ${escapeHtml(data.cauHoiGoc || '(Chưa có câu hỏi)')}</p>
                     <div class="answer-section">
+                        <div class="answer-title">✅ Trả lời:</div>
                         <div class="answer-content">${escapeHtml(data.noiDungTraLoi || '(Chưa có nội dung)')}</div>
-                        ${data.ctaMacDinh ? `<div class="cta-box">${escapeHtml(data.ctaMacDinh)}</div>` : ''}
+                        ${data.ctaMacDinh ? `<div class="cta-box">💬 ${escapeHtml(data.ctaMacDinh)}</div>` : ''}
+                    </div>
+                    <div class="meta-info">
+                        <span>🎯 Ưu tiên: ${data.uuTien}</span>
+                        <span>📊 Trạng thái: ${data.trangThai}</span>
                     </div>
                 </div>
             `;
@@ -2067,23 +3533,34 @@
         function duplicateFAQ(id) {
             const faq = faqDatabase.find(f => f.id === id);
             if (faq) {
-                const newFaq = {...faq, id: generateId(), maCauHoi: generateCode(faq.loaiCauHoi, faq.nhomFAQ), tieuDe: faq.tieuDe + ' (Bản sao)', ngayTao: new Date().toISOString()};
+                const newFaq = {
+                    ...faq, 
+                    id: generateId(), 
+                    maCauHoi: generateCode(faq.loaiCauHoi, faq.nhomFAQ), 
+                    tieuDe: faq.tieuDe + ' (Bản sao)', 
+                    ngayTao: new Date().toISOString()
+                };
                 faqDatabase.push(newFaq);
-                saveDataToStorage();
+                saveEncryptedData();
                 updateStats();
                 displayFAQ(faqDatabase);
                 updateDataTable();
+                addSecurityLog('FAQ_DUPLICATE', currentUser.username, `Tạo bản sao FAQ: ${faq.tieuDe}`);
                 showToast('📋 Đã tạo bản sao!', 'success');
             }
         }
 
         function deleteFAQ(id) {
-            if (confirm('Bạn có chắc muốn xóa FAQ này?')) {
+            const faq = faqDatabase.find(f => f.id === id);
+            if (!faq) return;
+            
+            if (confirm(`Bạn có chắc muốn xóa FAQ "${faq.tieuDe}"?`)) {
                 faqDatabase = faqDatabase.filter(f => f.id !== id);
-                saveDataToStorage();
+                saveEncryptedData();
                 updateStats();
                 displayFAQ(faqDatabase);
                 updateDataTable();
+                addSecurityLog('FAQ_DELETE', currentUser.username, `Xóa FAQ: ${faq.tieuDe}`);
                 showToast('🗑️ Đã xóa!', 'success');
             }
         }
@@ -2135,37 +3612,71 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'FAQ_Database');
             XLSX.writeFile(wb, `SkillUp_FAQ_${formatDate(new Date())}.xlsx`);
+            
+            addSecurityLog('EXPORT_EXCEL', currentUser.username, `Xuất ${data.length} FAQ ra Excel`);
             showToast('📊 Đã xuất Excel!', 'success');
         }
 
         function exportToCSV() {
             const headers = ['ID','Mã','Loại','Nhóm','Tiêu Đề','Nội Dung','CTA','Trạng Thái','Ưu Tiên'];
-            const rows = faqDatabase.map(f => [f.id, f.maCauHoi, f.loaiCauHoi, f.nhomFAQ, `"${f.tieuDe}"`, `"${f.noiDungTraLoi?.replace(/"/g,'""')}"`, `"${f.ctaMacDinh?.replace(/"/g,'""')}"`, f.trangThai, f.uuTien]);
-            const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-            downloadFile(csv, `SkillUp_FAQ_${formatDate(new Date())}.csv`, 'text/csv');
+            const rows = faqDatabase.map(f => [
+                f.id, 
+                f.maCauHoi, 
+                f.loaiCauHoi, 
+                f.nhomFAQ, 
+                `"${(f.tieuDe || '').replace(/"/g,'""')}"`, 
+                `"${(f.noiDungTraLoi || '').replace(/"/g,'""')}"`, 
+                `"${(f.ctaMacDinh || '').replace(/"/g,'""')}"`, 
+                f.trangThai, 
+                f.uuTien
+            ]);
+            const csv = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            downloadFile(csv, `SkillUp_FAQ_${formatDate(new Date())}.csv`, 'text/csv;charset=utf-8');
+            
+            addSecurityLog('EXPORT_CSV', currentUser.username, `Xuất ${faqDatabase.length} FAQ ra CSV`);
             showToast('📄 Đã xuất CSV!', 'success');
         }
 
         function showImportModal() {
+            document.getElementById('importFile').value = '';
             openModal('importModal');
         }
 
         function processImport() {
             const file = document.getElementById('importFile').files[0];
-            if (!file) { showToast('❌ Chưa chọn file!', 'error'); return; }
+            if (!file) { 
+                showToast('❌ Chưa chọn file!', 'error'); 
+                return; 
+            }
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     let data;
+                    let importCount = 0;
+                    
                     if (file.name.endsWith('.json')) {
                         data = JSON.parse(e.target.result);
-                        if (data.faq) faqDatabase = [...faqDatabase, ...data.faq];
-                        else if (Array.isArray(data)) faqDatabase = [...faqDatabase, ...data];
+                        
+                        // Check if it's an encrypted backup
+                        if (data.encrypted && data.data) {
+                            const decrypted = SecurityModule.decrypt(data.data, encryptionKey);
+                            if (decrypted && decrypted.faq) {
+                                faqDatabase = [...faqDatabase, ...decrypted.faq];
+                                importCount = decrypted.faq.length;
+                            }
+                        } else if (data.faq) {
+                            faqDatabase = [...faqDatabase, ...data.faq];
+                            importCount = data.faq.length;
+                        } else if (Array.isArray(data)) {
+                            faqDatabase = [...faqDatabase, ...data];
+                            importCount = data.length;
+                        }
                     } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.csv')) {
                         const wb = XLSX.read(e.target.result, {type: 'binary'});
                         const ws = wb.Sheets[wb.SheetNames[0]];
                         data = XLSX.utils.sheet_to_json(ws);
+                        
                         data.forEach(row => {
                             faqDatabase.push({
                                 id: row['ID'] || generateId(),
@@ -2184,22 +3695,28 @@
                                 monHocLienQuan: row['Môn Học Liên Quan'] || 'Tất Cả',
                                 doTuoi: row['Độ Tuổi'] || 'Tất cả',
                                 giaiDoanTuVan: row['Giai Đoạn Tư Vấn'] || 'Tất cả',
-                                uuTien: row['Ưu Tiên'] || 50,
+                                uuTien: parseInt(row['Ưu Tiên']) || 50,
                                 trangThai: row['Trạng Thái'] || 'Chờ duyệt',
                                 nguoiTao: row['Người Tạo'] || currentUser?.name || '',
                                 ngayTao: row['Ngày Tạo'] || new Date().toISOString(),
                                 ghiChuNoiBo: row['Ghi Chú Nội Bộ'] || ''
                             });
                         });
+                        importCount = data.length;
                     }
-                    saveDataToStorage();
+                    
+                    saveEncryptedData();
                     updateStats();
                     initFilters();
                     displayFAQ(faqDatabase);
                     updateDataTable();
                     closeModal('importModal');
-                    showToast('📥 Nhập thành công!', 'success');
+                    
+                    addSecurityLog('IMPORT', currentUser.username, `Nhập ${importCount} FAQ từ file`);
+                    showToast(`📥 Nhập thành công ${importCount} FAQ!`, 'success');
+                    
                 } catch(err) {
+                    console.error('Import error:', err);
                     showToast('❌ Lỗi: ' + err.message, 'error');
                 }
             };
@@ -2210,20 +3727,40 @@
 
         // ==================== BACKUP ====================
         function createBackup() {
-            const backup = {
-                id: Date.now(),
-                date: new Date().toISOString(),
-                faq: faqDatabase,
-                templates: templateDatabase,
-                situations: situationDatabase
+            const backupData = {
+                version: '3.0',
+                createdAt: new Date().toISOString(),
+                createdBy: currentUser.username,
+                encrypted: true,
+                data: SecurityModule.encrypt({
+                    faq: faqDatabase,
+                    templates: templateDatabase,
+                    situations: situationDatabase
+                }, encryptionKey)
             };
             
-            backupHistory.unshift({id: backup.id, date: backup.date, count: faqDatabase.length});
-            if (backupHistory.length > 10) backupHistory = backupHistory.slice(0, 10);
-            localStorage.setItem(CONFIG.STORAGE_KEYS.BACKUPS, JSON.stringify(backupHistory));
+            const backupEntry = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                count: faqDatabase.length,
+                createdBy: currentUser.username
+            };
             
-            downloadFile(JSON.stringify(backup, null, 2), `SkillUp_Backup_${formatDate(new Date())}.json`, 'application/json');
+            backupHistory.unshift(backupEntry);
+            if (backupHistory.length > 10) {
+                backupHistory = backupHistory.slice(0, 10);
+            }
+            
+            saveEncryptedData();
+            
+            downloadFile(
+                JSON.stringify(backupData, null, 2), 
+                `SkillUp_Backup_${formatDate(new Date())}_encrypted.json`, 
+                'application/json'
+            );
+            
             loadBackupHistory();
+            addSecurityLog('BACKUP_CREATE', currentUser.username, `Tạo backup ${faqDatabase.length} FAQ`);
             showToast('💾 Backup đã tạo và tải về!', 'success');
         }
 
@@ -2233,34 +3770,57 @@
 
         function loadBackupHistory() {
             const list = document.getElementById('backupList');
+            if (!list) return;
+            
             if (backupHistory.length === 0) {
                 list.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:20px;">Chưa có backup</p>';
                 return;
             }
+            
             list.innerHTML = backupHistory.map(b => `
                 <div class="backup-item">
-                    <span>📁 ${new Date(b.date).toLocaleString('vi-VN')} (${b.count} FAQ)</span>
+                    <span>📁 ${new Date(b.date).toLocaleString('vi-VN')} (${b.count} FAQ) - ${b.createdBy || 'N/A'}</span>
                     <button class="btn btn-sm btn-outline" onclick="createBackup()">⬇️ Tải lại</button>
                 </div>
             `).join('');
         }
 
         function showRestoreModal() {
+            document.getElementById('restoreFile').value = '';
             openModal('restoreModal');
         }
 
         function processRestore() {
             const file = document.getElementById('restoreFile').files[0];
-            if (!file) { showToast('❌ Chưa chọn file!', 'error'); return; }
+            if (!file) { 
+                showToast('❌ Chưa chọn file!', 'error'); 
+                return; 
+            }
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (data.faq) faqDatabase = data.faq;
-                    if (data.templates) templateDatabase = data.templates;
-                    if (data.situations) situationDatabase = data.situations;
-                    saveDataToStorage();
+                    
+                    if (data.encrypted && data.data) {
+                        // Decrypt backup
+                        const decrypted = SecurityModule.decrypt(data.data, encryptionKey);
+                        if (!decrypted) {
+                            showToast('❌ Không thể giải mã backup! Kiểm tra khóa mã hóa.', 'error');
+                            return;
+                        }
+                        
+                        if (decrypted.faq) faqDatabase = decrypted.faq;
+                        if (decrypted.templates) templateDatabase = decrypted.templates;
+                        if (decrypted.situations) situationDatabase = decrypted.situations;
+                    } else {
+                        // Unencrypted backup (legacy)
+                        if (data.faq) faqDatabase = data.faq;
+                        if (data.templates) templateDatabase = data.templates;
+                        if (data.situations) situationDatabase = data.situations;
+                    }
+                    
+                    saveEncryptedData();
                     updateStats();
                     initFilters();
                     displayFAQ(faqDatabase);
@@ -2268,8 +3828,12 @@
                     displaySituations(situationDatabase);
                     updateDataTable();
                     closeModal('restoreModal');
+                    
+                    addSecurityLog('BACKUP_RESTORE', currentUser.username, `Khôi phục ${faqDatabase.length} FAQ từ backup`);
                     showToast('🔄 Khôi phục thành công!', 'success');
+                    
                 } catch(err) {
+                    console.error('Restore error:', err);
                     showToast('❌ Lỗi: File không hợp lệ!', 'error');
                 }
             };
@@ -2278,9 +3842,17 @@
 
         function updateAutoBackup() {
             const interval = parseInt(document.getElementById('autoBackupInterval').value);
+            const status = document.getElementById('backupStatus');
+            
             if (autoBackupTimer) clearInterval(autoBackupTimer);
+            
             if (interval > 0) {
                 autoBackupTimer = setInterval(createBackup, interval * 1000);
+                status.className = 'autosave-status active';
+                status.innerHTML = '<span class="status-dot active"></span><span>Đang hoạt động</span>';
+            } else {
+                status.className = 'autosave-status inactive';
+                status.innerHTML = '<span class="status-dot inactive"></span><span>Tắt</span>';
             }
         }
 
@@ -2288,21 +3860,30 @@
         function updateDataTable() {
             const approved = faqDatabase.filter(f => f.trangThai === 'Đã duyệt').length;
             const pending = faqDatabase.filter(f => f.trangThai === 'Chờ duyệt').length;
-            document.getElementById('manageStats').innerHTML = `Tổng: <strong>${faqDatabase.length}</strong> | Đã duyệt: <strong>${approved}</strong> | Chờ duyệt: <strong>${pending}</strong>`;
+            const hidden = faqDatabase.filter(f => f.trangThai === 'Tạm ẩn').length;
             
-            document.getElementById('dataTableBody').innerHTML = faqDatabase.map(f => `
+            document.getElementById('manageStats').innerHTML = 
+                `Tổng: <strong>${faqDatabase.length}</strong> | ` +
+                `Đã duyệt: <strong>${approved}</strong> | ` +
+                `Chờ duyệt: <strong>${pending}</strong> | ` +
+                `Tạm ẩn: <strong>${hidden}</strong>`;
+            
+            const tbody = document.getElementById('dataTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = faqDatabase.map(f => `
                 <tr>
                     <td>${f.id}</td>
                     <td><code>${f.maCauHoi}</code></td>
                     <td>${f.loaiCauHoi}</td>
                     <td>${f.nhomFAQ}</td>
-                    <td>${escapeHtml(f.tieuDe?.substring(0, 35))}${f.tieuDe?.length > 35 ? '...' : ''}</td>
-                    <td><span class="faq-tag ${f.trangThai === 'Đã duyệt' ? 'type' : ''}">${f.trangThai}</span></td>
+                    <td>${escapeHtml((f.tieuDe || '').substring(0, 35))}${(f.tieuDe || '').length > 35 ? '...' : ''}</td>
+                    <td><span class="faq-tag ${f.trangThai === 'Đã duyệt' ? 'type' : f.trangThai === 'Tạm ẩn' ? 'priority-high' : ''}">${f.trangThai}</span></td>
                     <td>${f.uuTien}</td>
                     <td>
-                        <button class="btn btn-sm btn-outline" onclick="duplicateFAQ(${f.id})">📋</button>
-                        <button class="btn btn-sm btn-warning" onclick="editFAQ(${f.id})">✏️</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteFAQ(${f.id})">🗑️</button>
+                        <button class="btn btn-sm btn-outline" onclick="duplicateFAQ(${f.id})" title="Tạo bản sao">📋</button>
+                        <button class="btn btn-sm btn-warning" onclick="editFAQ(${f.id})" title="Chỉnh sửa">✏️</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteFAQ(${f.id})" title="Xóa">🗑️</button>
                     </td>
                 </tr>
             `).join('');
@@ -2316,25 +3897,54 @@
         }
 
         function clearAllData() {
-            if (confirm('⚠️ XÓA TẤT CẢ? Hành động này không thể hoàn tác!')) {
-                faqDatabase = [];
-                saveDataToStorage();
-                updateStats();
-                updateDataTable();
-                initFilters();
-                displayFAQ([]);
-                showToast('🗑️ Đã xóa tất cả!', 'success');
+            if (currentUser.role !== 'admin') {
+                showToast('❌ Chỉ Admin mới có quyền xóa tất cả dữ liệu!', 'error');
+                return;
             }
+            
+            if (!confirm('⚠️ XÓA TẤT CẢ? Hành động này không thể hoàn tác!')) {
+                return;
+            }
+            
+            if (!confirm('⚠️ BẠN CHẮC CHẮN CHỨNG? Đây là lần xác nhận cuối cùng!')) {
+                return;
+            }
+            
+            faqDatabase = [];
+            saveEncryptedData();
+            updateStats();
+            updateDataTable();
+            initFilters();
+            displayFAQ([]);
+            
+            addSecurityLog('DATA_CLEAR_ALL', currentUser.username, 'Xóa toàn bộ dữ liệu FAQ');
+            showToast('🗑️ Đã xóa tất cả!', 'success');
         }
 
         // ==================== UTILITIES ====================
         function generateId() {
-            return faqDatabase.length > 0 ? Math.max(...faqDatabase.map(f => f.id)) + 1 : 1001;
+            return faqDatabase.length > 0 ? Math.max(...faqDatabase.map(f => f.id || 0)) + 1 : 1001;
         }
 
         function generateCode(type, group) {
-            const prefixes = {'FAQ': 'FAQ', 'Chao_TuDong': 'CHAO', 'TinhHuong_DacBiet': 'THDB', 'LoTrinh_MonHoc': 'LTMH'};
-            const groups = {'Giới thiệu': 'GT', 'Cờ Vua': 'CV', 'Vẽ': 'VE', 'Toán Tư Duy': 'SB', 'Tiền Tiểu Học': 'TTH', 'Rèn Chữ': 'RC', 'Học Phí': 'HP', 'Giáo Viên': 'GV', 'Cơ Sở Vật Chất': 'CSVC', 'Đăng Ký': 'DK'};
+            const prefixes = {
+                'FAQ': 'FAQ', 
+                'Chao_TuDong': 'CHAO', 
+                'TinhHuong_DacBiet': 'THDB', 
+                'LoTrinh_MonHoc': 'LTMH'
+            };
+            const groups = {
+                'Giới thiệu': 'GT', 
+                'Cờ Vua': 'CV', 
+                'Vẽ': 'VE', 
+                'Toán Tư Duy': 'SB', 
+                'Tiền Tiểu Học': 'TTH', 
+                'Rèn Chữ': 'RC', 
+                'Học Phí': 'HP', 
+                'Giáo Viên': 'GV', 
+                'Cơ Sở Vật Chất': 'CSVC', 
+                'Đăng Ký': 'DK'
+            };
             const count = faqDatabase.filter(f => f.loaiCauHoi === type && f.nhomFAQ === group).length + 1;
             return `${prefixes[type] || 'FAQ'}-${groups[group] || 'XX'}-${String(count).padStart(3, '0')}`;
         }
@@ -2344,41 +3954,59 @@
                 const orig = btn.textContent;
                 btn.textContent = '✅ Đã sao chép!';
                 btn.classList.add('copied');
-                setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+                setTimeout(() => { 
+                    btn.textContent = orig; 
+                    btn.classList.remove('copied'); 
+                }, 1500);
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                showToast('❌ Không thể sao chép!', 'error');
             });
         }
 
         function copyFull(id) {
             const faq = faqDatabase.find(f => f.id === id);
             if (faq) {
-                let text = faq.noiDungTraLoi;
+                let text = faq.noiDungTraLoi || '';
                 if (faq.ctaMacDinh) text += '\n\n' + faq.ctaMacDinh;
-                navigator.clipboard.writeText(text);
-                showToast('📋 Đã sao chép đầy đủ!', 'success');
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('📋 Đã sao chép đầy đủ!', 'success');
+                });
             }
         }
 
         function escapeHtml(text) {
             if (!text) return '';
-            return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         function escapeCopy(text) {
             if (!text) return '';
-            return text.replace(/`/g,'\\`').replace(/\$/g,'\\$').replace(/\n/g,'\\n');
+            return text
+                .replace(/\\/g, '\\\\')
+                .replace(/`/g, '\\`')
+                .replace(/\$/g, '\\$')
+                .replace(/\n/g, '\\n');
         }
 
         function formatDate(d) {
-            return d.toISOString().slice(0,10).replace(/-/g,'');
+            return d.toISOString().slice(0, 10).replace(/-/g, '');
         }
 
         function downloadFile(content, filename, type) {
-            const blob = new Blob([content], {type});
+            const blob = new Blob([content], { type });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = filename;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
@@ -2389,19 +4017,33 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        function openModal(id) { document.getElementById(id).classList.add('show'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        function openModal(id) { 
+            document.getElementById(id).classList.add('show'); 
+        }
+        
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('show'); 
+        }
 
+        // Close modal when clicking outside
         document.addEventListener('click', e => {
-            if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('show');
+            }
         });
 
-        // Initialize
+        // Close modal with Escape key
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+                    modal.classList.remove('show');
+                });
+                document.getElementById('shortcutsPanel').classList.remove('show');
+            }
+        });
+
+        // ==================== INITIALIZE APPLICATION ====================
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
-
-
-
-
